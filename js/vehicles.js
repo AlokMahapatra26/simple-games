@@ -142,51 +142,92 @@ function createCarMesh(bodyColor, isTaxi = false) {
     rearPlate.position.set(0, 3.3, -10.96);
     carGroup.add(rearPlate);
 
-    // 4. Glossy Glass Windows
+    // 4. Glossy Automotive Tinted Windows with Black Frames
+    const windowFrameMat = new THREE.MeshBasicMaterial({ color: 0x09090b });
     const glassMat = new THREE.MeshPhysicalMaterial({
-        color: 0x0f172a,
-        emissive: 0x0284c7,
-        emissiveIntensity: 0.08,
-        metalness: 0.1,
+        color: 0x0b1329,
+        emissive: 0x0369a1,
+        emissiveIntensity: 0.12,
+        metalness: 0.35,
         roughness: 0.08,
+        clearcoat: 1.0,
+        clearcoatRoughness: 0.05,
         transparent: true,
-        opacity: 0.15,
+        opacity: 0.88, // Bold, authentic automotive tinted glass
         envMap: sharedEnvCube,
-        envMapIntensity: 0.6,
-        envMapIntensity: 1.4,
+        envMapIntensity: 1.6,
         polygonOffset: true,
-        polygonOffsetFactor: -2,
-        polygonOffsetUnits: -2
+        polygonOffsetFactor: -3,
+        polygonOffsetUnits: -3
     });
 
-    // Front Windshield
-    const frontGlass = new THREE.Mesh(new THREE.PlaneGeometry(6.9, 3.85), glassMat);
+    // Front Windshield Frame & Glass
+    const frontFrame = new THREE.Mesh(new THREE.PlaneGeometry(7.25, 4.05), windowFrameMat);
+    frontFrame.rotation.order = 'YXZ';
+    frontFrame.rotation.x = -0.82;
+    frontFrame.position.set(0, 6.45, 3.94);
+    carGroup.add(frontFrame);
+
+    const frontGlass = new THREE.Mesh(new THREE.PlaneGeometry(6.95, 3.82), glassMat);
     frontGlass.rotation.order = 'YXZ';
     frontGlass.rotation.x = -0.82;
-    frontGlass.position.set(0, 6.45, 3.95);
+    frontGlass.position.set(0, 6.45, 3.98);
     carGroup.add(frontGlass);
 
-    // Rear Back Window
-    const rearGlass = new THREE.Mesh(new THREE.PlaneGeometry(6.8, 4.65), glassMat);
+    // Sleek dual black windshield wipers at cowl
+    [-1.2, 1.2].forEach((wx) => {
+        const wiperArm = new THREE.Mesh(
+            new THREE.BoxGeometry(2.1, 0.08, 0.12),
+            new THREE.MeshBasicMaterial({ color: 0x18181b })
+        );
+        wiperArm.rotation.order = 'YXZ';
+        wiperArm.rotation.x = -0.82;
+        wiperArm.rotation.z = -0.18;
+        wiperArm.position.set(wx, 5.0, 5.05);
+        carGroup.add(wiperArm);
+    });
+
+    // Rear Window Frame & Glass
+    const rearFrame = new THREE.Mesh(new THREE.PlaneGeometry(7.15, 4.85), windowFrameMat);
+    rearFrame.rotation.order = 'YXZ';
+    rearFrame.rotation.y = Math.PI;
+    rearFrame.rotation.x = -1.03;
+    rearFrame.position.set(0, 6.52, -5.54);
+    carGroup.add(rearFrame);
+
+    const rearGlass = new THREE.Mesh(new THREE.PlaneGeometry(6.85, 4.58), glassMat);
     rearGlass.rotation.order = 'YXZ';
     rearGlass.rotation.y = Math.PI;
     rearGlass.rotation.x = -1.03;
-    rearGlass.position.set(0, 6.52, -5.55);
+    rearGlass.position.set(0, 6.52, -5.58);
     carGroup.add(rearGlass);
 
     // Left & Right Side Windows
-    [-4.32, 4.32].forEach((sideX) => {
-        const sideWin = new THREE.Mesh(new THREE.PlaneGeometry(8.2, 2.15), glassMat);
-        sideWin.rotation.y = sideX > 0 ? Math.PI / 2 : -Math.PI / 2;
-        sideWin.position.set(sideX, 6.32, -0.5);
-        carGroup.add(sideWin);
+    [-4.36, 4.36].forEach((sideX) => {
+        // Window Surround Black Frame
+        const sideFrame = new THREE.Mesh(new THREE.PlaneGeometry(8.5, 2.3), windowFrameMat);
+        sideFrame.rotation.y = sideX > 0 ? Math.PI / 2 : -Math.PI / 2;
+        sideFrame.position.set(sideX, 6.32, -0.5);
+        carGroup.add(sideFrame);
 
-        // Dark B-Pillar divider
+        // Front Door Glass Pane
+        const frontSideWin = new THREE.Mesh(new THREE.PlaneGeometry(3.85, 2.12), glassMat);
+        frontSideWin.rotation.y = sideX > 0 ? Math.PI / 2 : -Math.PI / 2;
+        frontSideWin.position.set(sideX * 1.002, 6.32, 1.6);
+        carGroup.add(frontSideWin);
+
+        // Rear Door Glass Pane
+        const rearSideWin = new THREE.Mesh(new THREE.PlaneGeometry(3.95, 2.12), glassMat);
+        rearSideWin.rotation.y = sideX > 0 ? Math.PI / 2 : -Math.PI / 2;
+        rearSideWin.position.set(sideX * 1.002, 6.32, -2.4);
+        carGroup.add(rearSideWin);
+
+        // Dark B-Pillar divider between doors
         const pillar = new THREE.Mesh(
-            new THREE.BoxGeometry(0.14, 2.25, 0.45),
-            new THREE.MeshBasicMaterial({ color: 0x09090b })
+            new THREE.BoxGeometry(0.18, 2.3, 0.55),
+            windowFrameMat
         );
-        pillar.position.set(sideX, 6.32, -0.35);
+        pillar.position.set(sideX * 1.004, 6.32, -0.4);
         carGroup.add(pillar);
 
         // Side Mirror

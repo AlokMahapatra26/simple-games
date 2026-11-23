@@ -54,7 +54,7 @@ const player = {
 };
 
 // 6. Camera & Environment
-let camMode = 0; // 0 = Standard Chase View, 1 = Wide Cinematic Chase View
+let camMode = 0; // 0 = Close Action View, 1 = Standard Chase View, 2 = Wide Cinematic View
 let camYawOffset = 0;
 let camPitchOffset = 0;
 let camFollowYaw = 0;

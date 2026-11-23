@@ -57,6 +57,20 @@ function toggleEnterExitCar() {
     }
 }
 
+function cycleCameraView() {
+    camMode = (camMode + 1) % 3;
+    camYawOffset = 0;
+    if (playerCar) camFollowYaw = playerCar.heading;
+    camEyePos = null;
+    camLookTarget = null;
+    const views = [
+        'Close Action Chase View 🎥',
+        'Standard Chase View 🎥',
+        'Wide Cinematic Chase View 🎥'
+    ];
+    showToast(views[camMode]);
+}
+
 function setupControls() {
     // Unlock Web Audio on first user interaction
     const unlockAudio = () => ensureAudio();
@@ -75,11 +89,7 @@ function setupControls() {
         keys[e.code] = true;
         if (e.code === 'KeyE' || e.code === 'KeyF') toggleEnterExitCar();
         if (e.code === 'KeyC') {
-            camMode = (camMode + 1) % 2;
-            camYawOffset = 0;
-            camEyePos = null;
-            camLookTarget = null;
-            showToast(camMode === 0 ? 'Standard Chase View' : 'Wide Cinematic Chase View');
+            cycleCameraView();
         }
         if (e.code === 'KeyM' || e.code === 'Tab') {
             toggleFullMap();
@@ -300,14 +310,7 @@ function setupControls() {
     }
 
     const camBtn = document.getElementById('camBtn');
-    if (camBtn) camBtn.addEventListener('click', () => {
-        camMode = (camMode + 1) % 2;
-        camYawOffset = 0;
-        if (playerCar) camFollowYaw = playerCar.heading;
-        camEyePos = null;
-        camLookTarget = null;
-        showToast(camMode === 0 ? 'Standard Chase View' : 'Wide Cinematic Chase View');
-    });
+    if (camBtn) camBtn.addEventListener('click', cycleCameraView);
 
     const hornBtn = document.getElementById('hornBtn');
     if (hornBtn) {

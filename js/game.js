@@ -422,8 +422,30 @@ function update(dt) {
 
         // Exterior Third-Person Chase Camera (Smooth, Stable, Vibration-Free Following)
         if (playerCar.interiorGroup) playerCar.interiorGroup.visible = true;
-        const camDist = (camMode === 0) ? 34 : 48;
-        const camHeight = (camMode === 0) ? 13.5 : 17.5;
+        let camDist = 34;
+        let camHeight = 13.5;
+        let lookDist = 14;
+        let lookHeight = 5.0;
+
+        if (camMode === 0) {
+            // Close Action Chase View (Elevated over roof for clear forward road visibility)
+            camDist = 22.0;
+            camHeight = 11.4;
+            lookDist = 26.0;
+            lookHeight = 4.6;
+        } else if (camMode === 1) {
+            // Standard Chase View
+            camDist = 34;
+            camHeight = 13.5;
+            lookDist = 14;
+            lookHeight = 5.0;
+        } else {
+            // Wide Cinematic Chase View
+            camDist = 50;
+            camHeight = 18.0;
+            lookDist = 16;
+            lookHeight = 5.5;
+        }
 
         const totalYaw = playerCar.heading + camYawOffset;
 
@@ -440,9 +462,9 @@ function update(dt) {
         camera.position.set(camX, camY, camZ);
 
         // Stable look-at target locked to vehicle center and forward direction
-        const lookX = playerCar.x + Math.sin(camFollowYaw) * 14;
-        const lookZ = playerCar.z + Math.cos(camFollowYaw) * 14;
-        camera.lookAt(lookX, 5.0, lookZ);
+        const lookX = playerCar.x + Math.sin(camFollowYaw) * lookDist;
+        const lookZ = playerCar.z + Math.cos(camFollowYaw) * lookDist;
+        camera.lookAt(lookX, lookHeight, lookZ);
     } else {
         if (playerCar && playerCar.interiorGroup) playerCar.interiorGroup.visible = true;
         // Free-Look Cursor Orbit Camera while on foot

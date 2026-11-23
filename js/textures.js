@@ -54,12 +54,66 @@ function createCarSideTexture(isTaxi) {
     ctx.fillStyle = isTaxi ? '#facc15' : '#ffffff';
     ctx.fillRect(0, 0, 512, 256);
 
+    // Dark Tinted Automotive Glass Windows & Pillar Frames
+    // 1. Cabin Window Opening Cutout
+    ctx.fillStyle = '#09090b'; // Black rubber weatherstrip frame
+    ctx.beginPath();
+    ctx.moveTo(136, 94);
+    ctx.lineTo(168, 32);
+    ctx.lineTo(340, 32);
+    ctx.lineTo(374, 94);
+    ctx.closePath();
+    ctx.fill();
+
+    // 2. Front & Rear Side Window Glass Panes (Deep tinted gloss)
+    const winGrad = ctx.createLinearGradient(0, 34, 0, 92);
+    winGrad.addColorStop(0, '#1e293b');
+    winGrad.addColorStop(0.3, '#0f172a');
+    winGrad.addColorStop(0.8, '#020617');
+    ctx.fillStyle = winGrad;
+
+    // Rear passenger side window
+    ctx.beginPath();
+    ctx.moveTo(144, 90);
+    ctx.lineTo(172, 38);
+    ctx.lineTo(246, 38);
+    ctx.lineTo(246, 90);
+    ctx.closePath();
+    ctx.fill();
+
+    // Front driver side window
+    ctx.beginPath();
+    ctx.moveTo(260, 90);
+    ctx.lineTo(260, 38);
+    ctx.lineTo(334, 38);
+    ctx.lineTo(366, 90);
+    ctx.closePath();
+    ctx.fill();
+
+    // Specular sky reflection diagonal slash across glass
+    ctx.fillStyle = 'rgba(56, 189, 248, 0.22)';
+    ctx.beginPath();
+    ctx.moveTo(190, 38);
+    ctx.lineTo(225, 38);
+    ctx.lineTo(170, 90);
+    ctx.lineTo(148, 90);
+    ctx.closePath();
+    ctx.fill();
+
+    ctx.beginPath();
+    ctx.moveTo(280, 38);
+    ctx.lineTo(315, 38);
+    ctx.lineTo(285, 90);
+    ctx.lineTo(262, 90);
+    ctx.closePath();
+    ctx.fill();
+
     // Lower rocker skirt
     ctx.fillStyle = '#18181b';
     ctx.fillRect(0, 218, 512, 38);
 
     // Door shutlines & handles
-    ctx.strokeStyle = 'rgba(15, 23, 42, 0.45)';
+    ctx.strokeStyle = 'rgba(15, 23, 42, 0.55)';
     ctx.lineWidth = 4;
     ctx.strokeRect(150, 92, 108, 122);
     ctx.strokeRect(262, 92, 104, 122);
