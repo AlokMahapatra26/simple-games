@@ -54,9 +54,10 @@ const player = {
 };
 
 // 6. Camera & Environment
-let camMode = 0; // 0 = Cockpit / Steering Wheel View (Primary), 1 = Chase View
+let camMode = 0; // 0 = Standard Chase View, 1 = Wide Cinematic Chase View
 let camYawOffset = 0;
 let camPitchOffset = 0;
+let camFollowYaw = 0;
 let camEyePos = null;
 let camLookTarget = null;
 let timeOfDay = 0.28; // 0..1 (0.28 = morning)

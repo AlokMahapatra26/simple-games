@@ -47,6 +47,7 @@ function toggleEnterExitCar() {
             player.mesh.visible = false;
             camYawOffset = 0;
             camPitchOffset = 0.16;
+            camFollowYaw = playerCar.heading;
             const exitBtn = document.getElementById('exitCarBtn');
             if (exitBtn) exitBtn.textContent = '[E] Step Out';
             showToast(playerCar.isTaxi ? 'Back in your Taxi!' : 'Hijacked Traffic Sedan!');
@@ -78,7 +79,7 @@ function setupControls() {
             camYawOffset = 0;
             camEyePos = null;
             camLookTarget = null;
-            showToast(camMode === 0 ? 'Inside Cockpit View (Steering Wheel)' : 'Exterior Chase View');
+            showToast(camMode === 0 ? 'Standard Chase View' : 'Wide Cinematic Chase View');
         }
         if (e.code === 'KeyM' || e.code === 'Tab') {
             toggleFullMap();
@@ -275,7 +276,6 @@ function setupControls() {
     if (settingsRadioToggle) {
         settingsRadioToggle.addEventListener('click', () => {
             toggleRadio();
-            settingsRadioToggle.textContent = radioPlaying ? 'Radio: ON 🎵' : 'Radio: OFF';
         });
     }
 
@@ -303,9 +303,10 @@ function setupControls() {
     if (camBtn) camBtn.addEventListener('click', () => {
         camMode = (camMode + 1) % 2;
         camYawOffset = 0;
+        if (playerCar) camFollowYaw = playerCar.heading;
         camEyePos = null;
         camLookTarget = null;
-        showToast(camMode === 0 ? 'Inside Cockpit View (Steering Wheel)' : 'Exterior Chase View');
+        showToast(camMode === 0 ? 'Standard Chase View' : 'Wide Cinematic Chase View');
     });
 
     const hornBtn = document.getElementById('hornBtn');
@@ -335,8 +336,11 @@ function setupControls() {
         playerCar.x = 250;
         playerCar.z = 250;
         playerCar.heading = 0;
+        playerCar.steerAngle = 0;
+        playerCar.yawRate = 0;
+        playerCar.roll = 0;
         playerCar.mesh.position.set(250, 0, 250);
-        playerCar.mesh.rotation.y = 0;
+        playerCar.mesh.rotation.set(0, 0, 0);
         if (!player.inCar) {
             player.inCar = true;
             player.mesh.visible = false;
@@ -372,7 +376,6 @@ function setupControls() {
         camera.aspect = window.innerWidth / window.innerHeight;
         camera.updateProjectionMatrix();
         renderer.setSize(window.innerWidth, window.innerHeight);
-        if (typeof resizeCockpitOverlay === 'function') resizeCockpitOverlay();
     });
 }
 

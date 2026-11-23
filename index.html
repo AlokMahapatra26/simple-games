@@ -10,7 +10,6 @@
 </head>
 <body>
     <canvas id="gameCanvas"></canvas>
-    <canvas id="cockpitCanvas"></canvas>
 
     <!-- Main Menu Screen Overlay -->
     <div id="mainMenuOverlay" class="fixed inset-0 z-40 bg-slate-950/60 backdrop-blur-sm flex flex-col items-center justify-center p-4 select-none">
@@ -37,7 +36,7 @@
 
             <!-- Footer Relaxed Note -->
             <div class="mt-6 pt-4 border-t border-slate-800/80 text-[11px] text-slate-400 leading-relaxed">
-                Cruise through the island, pick up passengers, listen to Lo-Fi radio, and unwind at your own pace.
+                Cruise through the island, pick up passengers, listen to Bollywood radio, and unwind at your own pace.
             </div>
         </div>
     </div>
@@ -78,11 +77,11 @@
                 </div>
             </div>
 
-            <!-- Lo-Fi Radio Quick Toggle -->
+            <!-- Bollywood Radio Quick Toggle -->
             <div class="flex items-center justify-between p-3 rounded-2xl bg-slate-900/60 border border-slate-800">
                 <div>
-                    <div class="text-xs font-bold text-slate-200">Lo-Fi Synthwave Radio</div>
-                    <div class="text-[10px] text-slate-400">Relaxing background chords & beats</div>
+                    <div class="text-xs font-bold text-slate-200">Bollywood Taxi Radio 📻</div>
+                    <div class="text-[10px] text-slate-400">90s Hits, 2000s, Mirchi & Desi Sitar Beats</div>
                 </div>
                 <button id="settingsRadioToggle" type="button" class="px-3 py-1.5 rounded-xl glass-hud text-pink-300 font-bold text-xs hover:bg-slate-800">
                     Radio: OFF
@@ -339,6 +338,7 @@
 
     <!-- Modular Game Scripts (Execution Order) -->
     <script src="js/config.js"></script>
+    <script src="js/audio_data.js"></script>
     <script src="js/audio.js"></script>
     <script src="js/textures.js"></script>
     <script src="js/vehicles.js"></script>
