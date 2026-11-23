@@ -10,6 +10,16 @@ const RIVER_X = -1000;
 const RIVER_WIDTH = 280;
 const HIGHWAY_Z = 2250;
 
+// Island 2: Palm Resort Island & Sea Link Bridge Constants
+const BRIDGE_Z = 0;
+const BRIDGE_START_X = 4100;
+const BRIDGE_END_X = 6400;
+const BRIDGE_WIDTH = 90;
+const ISLAND2_CENTER_X = 8200;
+const ISLAND2_CENTER_Z = 0;
+const ISLAND2_HALF_W = 1800; // X from 6400 to 10000
+const ISLAND2_HALF_D = 1800; // Z from -1800 to 1800
+
 // 2. Three.js Scene References
 let scene, camera, renderer, dirLight, ambientLight;
 
@@ -67,7 +77,7 @@ let inMainMenu = true;
 
 // 7. Input State
 const keys = {};
-const touchState = { left: false, right: false, gas: false, brake: false, nitro: false };
+const touchState = { left: false, right: false, gas: false, reverse: false, brake: false, nitro: false, jump: false };
 
 // 8. Economy, Resources & Mission State
 let cash = 120;

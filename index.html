@@ -8,106 +8,316 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 </head>
-<body>
+<body class="bg-slate-950 text-slate-100 antialiased overflow-hidden select-none">
     <canvas id="gameCanvas"></canvas>
 
-    <!-- Main Menu Screen Overlay -->
-    <div id="mainMenuOverlay" class="fixed inset-0 z-40 bg-slate-950/60 backdrop-blur-sm flex flex-col items-center justify-center p-4 select-none">
-        <div class="glass-hud rounded-3xl p-6 sm:p-8 max-w-sm w-full text-center text-white shadow-2xl border border-slate-700/60 flex flex-col items-center animate-fadeIn">
-            <!-- Game Logo & Title -->
-            <div class="w-16 h-16 rounded-2xl bg-amber-400/20 border border-amber-400/40 flex items-center justify-center text-4xl mb-3 shadow-lg shadow-amber-500/10">
-                🚕
+    <!-- Main Menu Screen Overlay (Cinematic AAA Title Experience) -->
+    <div id="mainMenuOverlay" class="fixed inset-0 z-40 cinematic-vignette flex flex-col justify-between p-6 sm:p-12 select-none overflow-y-auto">
+        <!-- Top Status Bar -->
+        <div class="flex items-center justify-between w-full">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-amber-400/10 border border-amber-400/25 flex items-center justify-center text-amber-400 shadow-lg shadow-amber-500/10">
+                    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H8c-.7 0-1.3.3-1.8.7C5.3 8.6 4 10 4 10s-2.7.6-4.5 1.1C.7 11.3 0 12.1 0 13v3c0 .6.4 1 1 1h2"/>
+                        <circle cx="7" cy="17" r="2"/><circle cx="17" cy="17" r="2"/>
+                    </svg>
+                </div>
+                <div>
+                    <div class="text-[10px] font-bold uppercase tracking-widest text-amber-400/90 font-display">Mumbai Open World Engine</div>
+                    <div class="text-xs font-semibold text-slate-300">Premier Padmini Cab Sim • 3D Edition</div>
+                </div>
             </div>
-            <h1 class="text-2xl sm:text-3xl font-black text-amber-300 tracking-wide">MUMBAI ISLAND</h1>
-            <p class="text-xs uppercase tracking-widest text-slate-300 font-extrabold mt-0.5 mb-6">Relaxing Taxi Simulator</p>
 
-            <!-- Menu Actions -->
+            <div class="hidden sm:flex items-center gap-3">
+                <div class="flex items-center gap-2 px-3 py-1.5 rounded-full glass-hud text-[11px] font-semibold text-emerald-400 border border-emerald-500/30">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                    <span>60 FPS PERFORMANCE ENGINE</span>
+                </div>
+                <div class="px-3 py-1.5 rounded-full glass-hud text-[11px] font-semibold text-slate-300 border border-white/10">
+                    <span>BUILD V2.4</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Center / Left Hero Title & Navigation Menu -->
+        <div class="my-auto py-8 max-w-xl w-full flex flex-col items-start animate-fadeIn">
+            <!-- Badges -->
+            <div class="flex items-center gap-2 mb-3">
+                <span class="px-3 py-1 rounded-full bg-amber-400/15 border border-amber-400/30 text-[10px] sm:text-xs font-display font-bold uppercase tracking-wider text-amber-300">
+                    Open World Simulator
+                </span>
+                <span class="px-3 py-1 rounded-full bg-sky-400/15 border border-sky-400/30 text-[10px] sm:text-xs font-display font-bold uppercase tracking-wider text-sky-300">
+                    Dual Islands & Sea Link
+                </span>
+            </div>
+
+            <!-- Grand Title -->
+            <h1 class="font-display text-4xl sm:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-100 via-amber-300 to-yellow-500 tracking-wider leading-none drop-shadow-2xl">
+                MUMBAI ISLAND
+            </h1>
+            <p class="text-xs sm:text-sm font-semibold tracking-wide text-slate-300 mt-2.5 mb-8 max-w-lg leading-relaxed">
+                Cruise through the iconic streets of South Mumbai, cross the Bandra-Worli Sea Link cable bridge, and relax at Palm Island Resort.
+            </p>
+
+            <!-- Menu Navigation Action List -->
             <div class="w-full flex flex-col gap-3">
-                <button id="startGameBtn" type="button" class="w-full py-3.5 rounded-2xl bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 active:scale-95 text-slate-950 font-black text-sm tracking-wider uppercase shadow-xl transition-all duration-150">
-                    ▶ Start Driving
+                <!-- Primary Action: Start Cruising -->
+                <button id="startGameBtn" type="button" class="menu-btn-card menu-btn-primary group">
+                    <div class="flex items-center gap-3.5">
+                        <div class="w-10 h-10 rounded-xl bg-slate-950/20 border border-black/20 flex items-center justify-center text-slate-950 transition-transform group-hover:scale-110">
+                            <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                        </div>
+                        <div>
+                            <div id="startBtnText" class="font-display font-black text-base sm:text-lg tracking-wide uppercase leading-tight text-slate-950">
+                                Start Cruising
+                            </div>
+                            <div class="text-[11px] font-semibold text-slate-900/80 mt-0.5">
+                                Free roam or pick up passengers across both islands
+                            </div>
+                        </div>
+                    </div>
+                    <svg class="w-5 h-5 text-slate-950/70 transition-transform group-hover:translate-x-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m9 18 6-6-6-6"/></svg>
                 </button>
-                <button id="settingsBtn" type="button" class="w-full py-3 rounded-2xl glass-hud hover:bg-slate-800/80 active:scale-95 text-slate-200 font-bold text-sm tracking-wide shadow-md transition-all">
-                    ⚙ Settings & Vibe
+
+                <!-- Settings & Audio Studio -->
+                <button id="settingsBtn" type="button" class="menu-btn-card group text-slate-200 hover:text-white">
+                    <div class="flex items-center gap-3.5">
+                        <div class="w-10 h-10 rounded-xl bg-amber-400/10 border border-amber-400/20 flex items-center justify-center text-amber-400 transition-transform group-hover:scale-110">
+                            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="4" x2="20" y1="21" y2="21"/><line x1="4" x2="20" y1="14" y2="14"/><line x1="4" x2="20" y1="7" y2="7"/><circle cx="8" cy="7" r="2"/><circle cx="16" cy="14" r="2"/><circle cx="10" cy="21" r="2"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <div class="font-display font-bold text-sm sm:text-base tracking-wide uppercase leading-tight text-white">
+                                Audio & Atmosphere Studio
+                            </div>
+                            <div class="text-[11px] text-slate-400 mt-0.5">
+                                Bollywood radio, time of day lighting, 60 FPS graphics
+                            </div>
+                        </div>
+                    </div>
+                    <svg class="w-5 h-5 text-slate-400 transition-transform group-hover:translate-x-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
                 </button>
-                <button id="exitBtn" type="button" class="w-full py-2.5 rounded-2xl glass-hud hover:bg-rose-500/20 hover:border-rose-400/30 active:scale-95 text-slate-400 hover:text-rose-300 font-semibold text-xs transition-all">
-                    ✕ Pause / Break
+
+                <!-- GPS Map Preview -->
+                <button id="mainMenuMapBtn" type="button" class="menu-btn-card group text-slate-200 hover:text-white">
+                    <div class="flex items-center gap-3.5">
+                        <div class="w-10 h-10 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400 transition-transform group-hover:scale-110">
+                            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/><line x1="9" x2="9" y1="3" y2="18"/><line x1="15" x2="15" y1="6" y2="21"/></svg>
+                        </div>
+                        <div>
+                            <div class="font-display font-bold text-sm sm:text-base tracking-wide uppercase leading-tight text-white">
+                                Island Satellite GPS
+                            </div>
+                            <div class="text-[11px] text-slate-400 mt-0.5">
+                                Full 8.4 km × 8.4 km highway & island map overview
+                            </div>
+                        </div>
+                    </div>
+                    <svg class="w-5 h-5 text-slate-400 transition-transform group-hover:translate-x-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
+                </button>
+
+                <!-- Quick Break / Pause Option -->
+                <button id="exitBtn" type="button" class="py-2.5 px-4 text-xs font-semibold text-slate-400 hover:text-rose-400 flex items-center gap-2 transition w-fit">
+                    <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="4" height="16" x="6" y="4" rx="1"/><rect width="4" height="16" x="14" y="4" rx="1"/></svg>
+                    <span>Pause Menu / Instructions</span>
                 </button>
             </div>
+        </div>
 
-            <!-- Footer Relaxed Note -->
-            <div class="mt-6 pt-4 border-t border-slate-800/80 text-[11px] text-slate-400 leading-relaxed">
-                Cruise through the island, pick up passengers, listen to Bollywood radio, and unwind at your own pace.
+        <!-- Bottom Game Feature Showcase & Prompt -->
+        <div class="pt-6 border-t border-white/10 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+            <!-- Feature Badges -->
+            <div class="flex flex-wrap items-center gap-4 text-xs text-slate-400">
+                <div class="flex items-center gap-2">
+                    <svg class="w-4 h-4 text-amber-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                    <span>Real Recorded Audio Engine</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <svg class="w-4 h-4 text-pink-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="2"/><path d="M16.24 7.76a6 6 0 0 1 0 8.49m-8.48-.01a6 6 0 0 1 0-8.49"/></svg>
+                    <span>Bollywood Live Radio Streams</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <svg class="w-4 h-4 text-sky-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"/></svg>
+                    <span>Dynamic Day & Night Atmosphere</span>
+                </div>
+            </div>
+
+            <!-- Quick Keyboard Prompt -->
+            <div class="flex items-center gap-2 text-xs font-semibold text-slate-300">
+                <span>Press</span>
+                <kbd class="hud-key px-2 py-0.5 text-xs">SPACE</kbd>
+                <span>or</span>
+                <kbd class="hud-key px-2 py-0.5 text-xs">ENTER</kbd>
+                <span>to Cruise</span>
             </div>
         </div>
     </div>
 
-    <!-- Settings Modal -->
-    <div id="settingsModal" class="hidden fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-4 select-none">
-        <div class="glass-hud rounded-3xl p-6 max-w-md w-full text-white shadow-2xl border border-slate-700/60 flex flex-col gap-4 animate-fadeIn">
-            <div class="flex items-center justify-between pb-2 border-b border-slate-800">
-                <div class="flex items-center gap-2">
-                    <span class="text-xl">⚙️</span>
-                    <h3 class="text-base font-black text-amber-300 uppercase tracking-wide">Audio & Atmosphere</h3>
+    <!-- Settings Modal (Wide AAA Audio & Environment Studio) -->
+    <div id="settingsModal" class="hidden fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-4 sm:p-6 select-none overflow-y-auto">
+        <div class="glass-card rounded-3xl p-6 sm:p-8 max-w-2xl w-full text-white shadow-2xl flex flex-col gap-6 animate-fadeIn border border-white/10 my-auto">
+            <!-- Modal Header -->
+            <div class="flex items-center justify-between pb-4 border-b border-white/10">
+                <div class="flex items-center gap-3.5">
+                    <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-amber-400/20 to-amber-600/10 border border-amber-400/30 flex items-center justify-center text-amber-400 shadow-lg shadow-amber-500/10">
+                        <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="4" x2="20" y1="21" y2="21"/><line x1="4" x2="20" y1="14" y2="14"/><line x1="4" x2="20" y1="7" y2="7"/><circle cx="8" cy="7" r="2"/><circle cx="16" cy="14" r="2"/><circle cx="10" cy="21" r="2"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <h3 class="font-display text-lg sm:text-xl font-bold text-white tracking-wide">Audio & Atmosphere Studio</h3>
+                            <span class="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-[9px] font-bold font-mono">LIVE TUNER</span>
+                        </div>
+                        <p class="text-xs text-slate-400 mt-0.5">Customize volume acoustics, Bollywood radio, daylight, and graphics</p>
+                    </div>
                 </div>
-                <button id="closeSettingsBtn" type="button" class="text-slate-400 hover:text-white font-bold text-base px-2 py-1">✕</button>
-            </div>
-
-            <!-- Master Volume -->
-            <div>
-                <div class="flex justify-between text-xs font-bold text-slate-300 mb-1.5">
-                    <span>Sound Volume</span>
-                    <span id="volumeValue" class="text-amber-400">70%</span>
-                </div>
-                <input id="volumeSlider" type="range" min="0" max="100" value="70" class="w-full accent-amber-400 cursor-pointer">
-            </div>
-
-            <!-- Atmosphere / Time of Day -->
-            <div>
-                <label class="block text-xs font-bold text-slate-300 mb-1.5">Atmosphere & Lighting</label>
-                <div class="grid grid-cols-3 gap-2">
-                    <button id="setMorningBtn" type="button" class="py-2.5 rounded-xl glass-hud hover:bg-slate-800 font-bold text-xs text-sky-300 active:scale-95 transition">
-                        ☀️ Morning
-                    </button>
-                    <button id="setSunsetBtn" type="button" class="py-2.5 rounded-xl glass-hud hover:bg-slate-800 font-bold text-xs text-amber-400 active:scale-95 transition">
-                        🌅 Golden Sunset
-                    </button>
-                    <button id="setNightBtn" type="button" class="py-2.5 rounded-xl glass-hud hover:bg-slate-800 font-bold text-xs text-indigo-300 active:scale-95 transition">
-                        🌙 Calm Night
-                    </button>
-                </div>
-            </div>
-
-            <!-- Bollywood Radio Quick Toggle -->
-            <div class="flex items-center justify-between p-3 rounded-2xl bg-slate-900/60 border border-slate-800">
-                <div>
-                    <div class="text-xs font-bold text-slate-200">Bollywood Taxi Radio 📻</div>
-                    <div class="text-[10px] text-slate-400">90s Hits, 2000s, Mirchi & Desi Sitar Beats</div>
-                </div>
-                <button id="settingsRadioToggle" type="button" class="px-3 py-1.5 rounded-xl glass-hud text-pink-300 font-bold text-xs hover:bg-slate-800">
-                    Radio: OFF
+                <button id="closeSettingsBtn" type="button" class="w-9 h-9 rounded-full glass-hud flex items-center justify-center text-slate-400 hover:text-white hover:bg-white/10 transition" title="Close Settings">
+                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
                 </button>
             </div>
 
-            <button id="saveSettingsBtn" type="button" class="w-full py-2.5 mt-1 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs tracking-wider uppercase transition">
-                Save & Close
-            </button>
+            <!-- Settings Content Grid (2 Columns on Desktop) -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <!-- Left Column: Audio Engine & Radio -->
+                <div class="flex flex-col gap-4">
+                    <!-- Master Volume Section -->
+                    <div class="p-4 rounded-2xl bg-slate-900/60 border border-white/5 space-y-3">
+                        <div class="flex justify-between items-center text-xs font-semibold text-slate-200">
+                            <span class="flex items-center gap-2">
+                                <svg class="w-4 h-4 text-amber-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/>
+                                </svg>
+                                <span>Master Sound Volume</span>
+                            </span>
+                            <span id="volumeValue" class="font-mono text-xs font-bold text-amber-400 bg-amber-400/10 px-2.5 py-0.5 rounded-full border border-amber-400/20">70%</span>
+                        </div>
+                        <input id="volumeSlider" type="range" min="0" max="100" value="70" class="w-full cursor-pointer">
+                        <div class="flex justify-between items-center text-[10px] text-slate-400 pt-0.5">
+                            <button id="volMuteBtn" type="button" class="hover:text-amber-400 transition">Mute (0%)</button>
+                            <button id="volHalfBtn" type="button" class="hover:text-amber-400 transition">50%</button>
+                            <button id="volDefaultBtn" type="button" class="text-amber-400 font-bold">70% (Default)</button>
+                            <button id="volMaxBtn" type="button" class="hover:text-amber-400 transition">100%</button>
+                        </div>
+                    </div>
+
+                    <!-- Bollywood Radio Deck -->
+                    <div class="p-4 rounded-2xl bg-slate-900/60 border border-white/5 flex flex-col justify-between gap-3">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-2.5">
+                                <div class="w-8 h-8 rounded-lg bg-pink-500/15 border border-pink-500/30 flex items-center justify-center text-pink-400">
+                                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <circle cx="12" cy="12" r="2"/><path d="M16.24 7.76a6 6 0 0 1 0 8.49m-8.48-.01a6 6 0 0 1 0-8.49m11.31-2.82a10 10 0 0 1 0 14.14m-14.14 0a10 10 0 0 1 0-14.14"/>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <div class="text-xs font-bold text-slate-200">Bollywood Taxi Radio</div>
+                                    <div class="text-[10px] text-slate-400">90s Hits, 2000s, Mirchi & Desi Sitar</div>
+                                </div>
+                            </div>
+                            <span class="text-[10px] font-mono text-pink-400 font-bold px-2 py-0.5 rounded bg-pink-500/10 border border-pink-500/20">LIVE FM</span>
+                        </div>
+
+                        <div class="flex items-center justify-between pt-1">
+                            <button id="settingsRadioToggle" type="button" class="w-full py-2.5 px-4 rounded-xl glass-hud text-pink-300 font-bold text-xs hover:bg-slate-800 transition flex items-center justify-between">
+                                <div class="flex items-center gap-2 truncate">
+                                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                                    <span id="settingsRadioStationName">Radio: OFF</span>
+                                </div>
+                                <span class="text-[10px] text-slate-400 font-mono">CLICK TO CYCLE</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column: Lighting & Graphics -->
+                <div class="flex flex-col gap-4">
+                    <!-- Lighting & Atmosphere Selection Cards -->
+                    <div class="p-4 rounded-2xl bg-slate-900/60 border border-white/5 space-y-2.5">
+                        <label class="block text-xs font-semibold text-slate-200">Atmosphere & Lighting</label>
+                        <div class="grid grid-cols-3 gap-2">
+                            <!-- Morning -->
+                            <button id="setMorningBtn" type="button" class="setting-card flex flex-col items-center text-center gap-1.5 active:scale-95 transition" title="Morning Sunlight">
+                                <div class="w-7 h-7 rounded-lg bg-amber-400/15 flex items-center justify-center text-amber-300">
+                                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/></svg>
+                                </div>
+                                <div class="text-[11px] font-bold text-white leading-tight">Morning</div>
+                                <div class="text-[9px] text-slate-400">Daylight</div>
+                            </button>
+
+                            <!-- Golden Sunset -->
+                            <button id="setSunsetBtn" type="button" class="setting-card flex flex-col items-center text-center gap-1.5 active:scale-95 transition" title="Golden Hour Sunset">
+                                <div class="w-7 h-7 rounded-lg bg-orange-400/15 flex items-center justify-center text-orange-400">
+                                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 10V2"/><path d="m4.93 10.93 1.41 1.41"/><path d="M2 18h2"/><path d="M20 18h2"/><path d="M22 22H2"/><path d="m8 6 4-4 4 4"/><path d="M16 18a4 4 0 0 0-8 0"/></svg>
+                                </div>
+                                <div class="text-[11px] font-bold text-white leading-tight">Sunset</div>
+                                <div class="text-[9px] text-slate-400">Magic Hour</div>
+                            </button>
+
+                            <!-- Midnight -->
+                            <button id="setNightBtn" type="button" class="setting-card flex flex-col items-center text-center gap-1.5 active:scale-95 transition" title="Calm Midnight">
+                                <div class="w-7 h-7 rounded-lg bg-indigo-500/15 flex items-center justify-center text-indigo-400">
+                                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+                                </div>
+                                <div class="text-[11px] font-bold text-white leading-tight">Midnight</div>
+                                <div class="text-[9px] text-slate-400">Neon City</div>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Graphics & Resolution Performance Toggle Card -->
+                    <div class="p-4 rounded-2xl bg-slate-900/60 border border-white/5 flex items-center justify-between gap-3">
+                        <div class="flex items-center gap-2.5">
+                            <div class="w-8 h-8 rounded-lg bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
+                                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <div class="text-xs font-bold text-slate-200">Graphics Mode</div>
+                                <div class="text-[10px] text-slate-400">Lock high 60 FPS or Native Retina Resolution</div>
+                            </div>
+                        </div>
+                        <button id="perfModeToggle" type="button" class="px-3.5 py-2 rounded-xl glass-hud border border-emerald-500/30 bg-emerald-500/15 text-emerald-400 font-bold text-xs hover:bg-emerald-500/25 transition flex items-center gap-1.5">
+                            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                            <span>⚡ 60 FPS Smooth</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="pt-2 border-t border-white/10 flex items-center justify-between gap-4">
+                <span class="text-[11px] text-slate-400 hidden sm:inline-block">Settings save instantly and persist during cruise</span>
+                <button id="saveSettingsBtn" type="button" class="w-full sm:w-auto px-8 py-3 rounded-2xl bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-slate-950 font-display font-black text-xs tracking-wider uppercase shadow-lg shadow-amber-500/20 transition flex items-center justify-center gap-2">
+                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                    <span>Save & Close</span>
+                </button>
+            </div>
         </div>
     </div>
 
     <!-- Exit / Break Modal -->
     <div id="exitModal" class="hidden fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-4 select-none">
-        <div class="glass-hud rounded-3xl p-6 max-w-sm w-full text-center text-white shadow-2xl border border-slate-700/60 animate-fadeIn">
-            <div class="text-4xl mb-2">🌴</div>
-            <h3 class="text-xl font-black text-amber-300">Taking a Break?</h3>
+        <div class="glass-card rounded-3xl p-7 max-w-sm w-full text-center text-white shadow-2xl animate-fadeIn border border-white/10">
+            <div class="w-14 h-14 rounded-2xl bg-amber-400/10 border border-amber-400/20 flex items-center justify-center text-amber-400 mx-auto mb-3">
+                <svg class="w-7 h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect width="4" height="16" x="6" y="4" rx="1"/><rect width="4" height="16" x="14" y="4" rx="1"/>
+                </svg>
+            </div>
+            <h3 class="font-display text-xl font-bold text-amber-300">Taking a Break?</h3>
             <p class="text-xs text-slate-300 mt-2 leading-relaxed">
                 Your taxi is safely parked on the island. You can resume cruising anytime!
             </p>
-            <div class="mt-5 flex flex-col gap-2">
-                <button id="resumeDriveBtn" type="button" class="w-full py-3 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs uppercase tracking-wider transition">
-                    ▶ Resume Cruising
+            <div class="mt-6 flex flex-col gap-2.5">
+                <button id="resumeDriveBtn" type="button" class="w-full py-3 rounded-2xl bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-slate-950 font-display font-bold text-xs uppercase tracking-wider shadow-lg shadow-amber-500/20 transition flex items-center justify-center gap-2">
+                    <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                    <span>Resume Cruising</span>
                 </button>
-                <button id="returnMenuBtn" type="button" class="w-full py-2.5 rounded-xl glass-hud hover:bg-slate-800 text-slate-300 font-bold text-xs transition">
-                    Main Menu
+                <button id="returnMenuBtn" type="button" class="w-full py-2.5 rounded-2xl hud-btn justify-center text-slate-300 text-xs">
+                    <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                    <span>Main Menu</span>
                 </button>
                 <button id="closeTabBtn" type="button" class="w-full py-2 rounded-xl text-slate-400 hover:text-slate-200 font-semibold text-[11px] transition">
                     Close Tab / Window
@@ -118,143 +328,268 @@
 
     <!-- In-Game HUD Elements (Hidden while on Main Menu) -->
     <div id="inGameHud" class="hidden">
-        <!-- Top Left HUD: Cash, Health, Fuel, Nitro & Controls -->
-        <div class="fixed top-3 left-3 z-20 flex flex-col gap-2 pointer-events-none max-w-[270px]">
-            <div class="glass-hud rounded-2xl p-3 text-white shadow-xl">
-                <div class="flex items-center justify-between gap-4">
+        <!-- Top Left HUD: Vehicle Telemetry & Quick Action Dock -->
+        <div class="fixed top-2.5 left-2.5 sm:top-3 sm:left-3 z-20 flex flex-col gap-2.5 pointer-events-none max-w-[280px]">
+            <!-- Vehicle & Driver Status Card -->
+            <div class="glass-card mobile-compact-hud rounded-2xl p-3 sm:p-3.5 text-white shadow-2xl border border-white/10 select-none">
+                <!-- Earnings & Fares -->
+                <div class="flex items-center justify-between gap-4 pb-2 sm:pb-2.5 border-b border-white/10">
                     <div>
-                        <div class="text-[10px] uppercase tracking-wider text-slate-400 font-bold">Earnings</div>
-                        <div id="cashDisplay" class="text-2xl font-black text-emerald-400">$120</div>
+                        <div class="flex items-center gap-1 text-[9px] sm:text-[10px] uppercase tracking-wider text-slate-400 font-bold">
+                            <svg class="w-3 h-3 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" x2="12" y1="2" y2="22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                            <span>Earnings</span>
+                        </div>
+                        <div id="cashDisplay" class="font-display text-xl sm:text-2xl font-black text-emerald-400 mt-0.5">$120</div>
                     </div>
                     <div class="text-right">
-                        <div class="text-[10px] uppercase tracking-wider text-slate-400 font-bold">Fares</div>
-                        <div id="faresDisplay" class="text-lg font-extrabold text-amber-300">0</div>
+                        <div class="flex items-center justify-end gap-1 text-[9px] sm:text-[10px] uppercase tracking-wider text-slate-400 font-bold">
+                            <svg class="w-3 h-3 text-amber-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                            <span>Fares</span>
+                        </div>
+                        <div id="faresDisplay" class="font-display text-xl sm:text-2xl font-black text-amber-300 mt-0.5">0</div>
                     </div>
                 </div>
 
-                <!-- Vehicle Integrity -->
-                <div class="mt-2.5">
-                    <div class="flex justify-between text-[11px] font-semibold text-slate-300 mb-0.5">
-                        <span>Taxi Health</span>
-                        <span id="healthText">100%</span>
+                <!-- Vehicle Integrity Bar -->
+                <div class="mt-2 sm:mt-2.5">
+                    <div class="flex justify-between items-center text-[9px] sm:text-[10px] font-semibold text-slate-300 mb-0.5 sm:mb-1">
+                        <span class="flex items-center gap-1 sm:gap-1.5">
+                            <svg class="w-2.5 h-2.5 sm:w-3 sm:h-3 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/></svg>
+                            <span>Health</span>
+                        </span>
+                        <span id="healthText" class="font-mono text-emerald-400 font-bold">100%</span>
                     </div>
-                    <div class="w-full h-2 bg-slate-800 rounded-full overflow-hidden">
-                        <div id="healthBar" class="h-full bg-emerald-500 transition-all duration-150" style="width: 100%"></div>
-                    </div>
-                </div>
-
-                <!-- Fuel Gauge -->
-                <div class="mt-2">
-                    <div class="flex justify-between text-[11px] font-semibold text-slate-300 mb-0.5">
-                        <span>Fuel</span>
-                        <span id="fuelText">100%</span>
-                    </div>
-                    <div class="w-full h-2 bg-slate-800 rounded-full overflow-hidden">
-                        <div id="fuelBar" class="h-full bg-amber-400 transition-all duration-150" style="width: 100%"></div>
+                    <div class="w-full h-1.5 bg-slate-900/80 rounded-full overflow-hidden p-0.5 border border-white/5">
+                        <div id="healthBar" class="h-full bg-gradient-to-r from-emerald-500 to-teal-400 rounded-full transition-all duration-150" style="width: 100%"></div>
                     </div>
                 </div>
 
-                <!-- Nitro Gauge -->
-                <div class="mt-2">
-                    <div class="flex justify-between text-[11px] font-semibold text-slate-300 mb-0.5">
-                        <span>Nitro (Shift)</span>
-                        <span id="nitroText">100%</span>
+                <!-- Fuel Gauge Bar -->
+                <div class="mt-1.5 sm:mt-2">
+                    <div class="flex justify-between items-center text-[9px] sm:text-[10px] font-semibold text-slate-300 mb-0.5 sm:mb-1">
+                        <span class="flex items-center gap-1 sm:gap-1.5">
+                            <svg class="w-2.5 h-2.5 sm:w-3 sm:h-3 text-amber-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" x2="15" y1="22" y2="22"/><line x1="4" x2="14" y1="9" y2="9"/><path d="M14 22V4a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v18"/><path d="M14 13h2a2 2 0 0 1 2 2v2a2 2 0 0 0 2 2h0a2 2 0 0 0 2-2V9.83a2 2 0 0 0-.59-1.42L18 5"/></svg>
+                            <span>Fuel</span>
+                        </span>
+                        <span id="fuelText" class="font-mono text-amber-400 font-bold">100%</span>
                     </div>
-                    <div class="w-full h-2 bg-slate-800 rounded-full overflow-hidden">
-                        <div id="nitroBar" class="h-full bg-sky-400 transition-all duration-150" style="width: 100%"></div>
+                    <div class="w-full h-1.5 bg-slate-900/80 rounded-full overflow-hidden p-0.5 border border-white/5">
+                        <div id="fuelBar" class="h-full bg-gradient-to-r from-amber-500 to-yellow-400 rounded-full transition-all duration-150" style="width: 100%"></div>
+                    </div>
+                </div>
+
+                <!-- Nitro Gauge Bar -->
+                <div class="mt-1.5 sm:mt-2">
+                    <div class="flex justify-between items-center text-[9px] sm:text-[10px] font-semibold text-slate-300 mb-0.5 sm:mb-1">
+                        <span class="flex items-center gap-1 sm:gap-1.5">
+                            <svg class="w-2.5 h-2.5 sm:w-3 sm:h-3 text-sky-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                            <span>Nitro</span>
+                        </span>
+                        <span id="nitroText" class="font-mono text-sky-400 font-bold">100%</span>
+                    </div>
+                    <div class="w-full h-1.5 bg-slate-900/80 rounded-full overflow-hidden p-0.5 border border-white/5">
+                        <div id="nitroBar" class="h-full bg-gradient-to-r from-sky-500 to-cyan-300 rounded-full transition-all duration-150" style="width: 100%"></div>
                     </div>
                 </div>
             </div>
 
-            <!-- Quick Action Buttons -->
-            <div class="flex flex-wrap gap-1.5 pointer-events-auto">
-                <button id="exitCarBtn" type="button" class="glass-hud hover:bg-slate-800 active:scale-95 text-amber-300 font-bold text-xs px-3 py-2 rounded-xl shadow transition">
-                    [E] Step Out
+            <!-- Desktop Action Dock (Hidden on mobile/touch screens to keep view clean) -->
+            <div id="desktopActionDock" class="desktop-action-dock grid grid-cols-2 gap-1.5 pointer-events-auto select-none">
+                <button id="exitCarBtn" type="button" class="hud-btn text-amber-300 hover:text-white" title="Step out of taxi or enter car">
+                    <kbd class="hud-key">E</kbd>
+                    <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 4h6a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-6"/><path d="m9 16 4-4-4-4"/><path d="M13 12H3"/></svg>
+                    <span id="exitCarText" class="truncate">Step Out</span>
                 </button>
-                <button id="mapBtn" type="button" class="glass-hud hover:bg-slate-800 active:scale-95 text-indigo-300 font-bold text-xs px-3 py-2 rounded-xl shadow transition">
-                    [M] Map 🗺️
+
+                <button id="mapBtn" type="button" class="hud-btn text-indigo-300 hover:text-white" title="Toggle Full GPS Map">
+                    <kbd class="hud-key">M</kbd>
+                    <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/><line x1="9" x2="9" y1="3" y2="18"/><line x1="15" x2="15" y1="6" y2="21"/></svg>
+                    <span>GPS Map</span>
                 </button>
-                <button id="camBtn" type="button" class="glass-hud hover:bg-slate-800 active:scale-95 text-slate-200 font-bold text-xs px-3 py-2 rounded-xl shadow transition">
-                    [C] View 🎥
+
+                <button id="camBtn" type="button" class="hud-btn text-slate-300 hover:text-white" title="Cycle Chase Camera View">
+                    <kbd class="hud-key">C</kbd>
+                    <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m16 13 5.223 3.482a.5.5 0 0 0 .777-.416V7.87a.5.5 0 0 0-.752-.432L16 10.5"/><rect x="2" y="6" width="14" height="12" rx="2"/></svg>
+                    <span>Camera</span>
                 </button>
-                <button id="hornBtn" type="button" class="glass-hud hover:bg-slate-800 active:scale-95 text-emerald-300 font-bold text-xs px-3 py-2 rounded-xl shadow transition">
-                    [H] Horn 📯
+
+                <button id="hornBtn" type="button" class="hud-btn text-emerald-300 hover:text-white" title="Honk horn">
+                    <kbd class="hud-key">H</kbd>
+                    <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11v3a1 1 0 0 0 1 1h3l5 4V5L7 9H4a1 1 0 0 0-1 1z"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+                    <span>Horn</span>
                 </button>
-                <button id="radioBtn" type="button" class="glass-hud hover:bg-slate-800 active:scale-95 text-pink-300 font-bold text-xs px-3 py-2 rounded-xl shadow transition">
-                    [R] Radio: OFF
+
+                <button id="radioBtn" type="button" class="hud-btn col-span-2 text-pink-300 hover:text-white justify-between" title="Cycle Bollywood radio stations">
+                    <div class="flex items-center gap-2 truncate">
+                        <kbd class="hud-key">R</kbd>
+                        <svg class="w-3.5 h-3.5 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="2"/><path d="M16.24 7.76a6 6 0 0 1 0 8.49m-8.48-.01a6 6 0 0 1 0-8.49m11.31-2.82a10 10 0 0 1 0 14.14m-14.14 0a10 10 0 0 1 0-14.14"/></svg>
+                        <span id="radioBtnText" class="truncate font-semibold text-xs">Radio: OFF</span>
+                    </div>
+                    <div id="radioEqVisualizer" class="hidden flex items-end gap-0.5 h-3 flex-shrink-0">
+                        <span class="eq-bar eq-1"></span>
+                        <span class="eq-bar eq-2"></span>
+                        <span class="eq-bar eq-3"></span>
+                        <span class="eq-bar eq-4"></span>
+                    </div>
                 </button>
-                <button id="timeBtn" type="button" class="glass-hud hover:bg-slate-800 active:scale-95 text-sky-300 font-bold text-xs px-3 py-2 rounded-xl shadow transition">
-                    [T] Day/Night
+
+                <button id="timeBtn" type="button" class="hud-btn text-sky-300 hover:text-white" title="Toggle Day and Night Lighting">
+                    <kbd class="hud-key">T</kbd>
+                    <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/></svg>
+                    <span>Day / Night</span>
                 </button>
-                <button id="pauseGameBtn" type="button" class="glass-hud hover:bg-slate-800 active:scale-95 text-slate-300 font-bold text-xs px-3 py-2 rounded-xl shadow transition">
-                    [Esc] Pause ⏸️
+
+                <button id="pauseGameBtn" type="button" class="hud-btn text-slate-300 hover:text-white" title="Pause game / Open menu">
+                    <kbd class="hud-key">ESC</kbd>
+                    <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="4" height="16" x="6" y="4" rx="1"/><rect width="4" height="16" x="14" y="4" rx="1"/></svg>
+                    <span>Pause</span>
                 </button>
             </div>
         </div>
 
         <!-- Top Center Objective Banner -->
-        <div class="fixed top-3 left-1/2 -translate-x-1/2 z-20 pointer-events-none w-[90%] max-w-md">
-            <div id="missionBanner" class="glass-hud rounded-2xl px-4 py-2.5 text-center text-white shadow-xl">
-                <div class="flex items-center justify-center gap-2">
-                    <span id="missionDot" class="w-2.5 h-2.5 rounded-full bg-sky-400 animate-pulse"></span>
-                    <span id="missionTitle" class="text-xs sm:text-sm font-extrabold tracking-wide text-sky-300 uppercase">Drive to Blue Pickup Zone</span>
-                    <span id="missionTimer" class="hidden text-xs font-black bg-amber-500/20 text-amber-300 px-2 py-0.5 rounded-lg border border-amber-400/30">45s</span>
+        <div class="fixed top-2.5 sm:top-3 left-1/2 -translate-x-1/2 z-20 pointer-events-none w-[94%] max-w-md select-none">
+            <div id="missionBanner" class="glass-card rounded-2xl px-3.5 py-2 sm:px-4 sm:py-2.5 shadow-2xl border border-sky-500/20 flex flex-col items-center">
+                <div class="flex items-center justify-between w-full gap-2 sm:gap-3">
+                    <div class="flex items-center gap-2 truncate">
+                        <div class="relative flex items-center justify-center w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0">
+                            <span class="absolute w-3 h-3 sm:w-4 sm:h-4 rounded-full bg-sky-400/50 radar-ping"></span>
+                            <span id="missionDot" class="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-sky-400 shadow-sm shadow-sky-400"></span>
+                        </div>
+                        <span id="missionTitle" class="font-display font-bold tracking-wider text-[11px] sm:text-sm text-sky-200 uppercase truncate">Drive to Blue Pickup Zone</span>
+                    </div>
+                    <span id="missionTimer" class="hidden font-mono font-bold text-[10px] sm:text-xs bg-amber-500/20 text-amber-300 px-2 sm:px-2.5 py-0.5 rounded-lg border border-amber-400/30 flex items-center gap-1 flex-shrink-0">
+                        <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                        <span id="missionTimerText">45s</span>
+                    </span>
                 </div>
-                <div id="missionSub" class="text-[11px] text-slate-300 mt-0.5">WASD Drive • Shift Nitro • M Full Map • H Horn • E Step Out • Space Brake • R Radio</div>
+                <div id="missionSub" class="text-[9px] sm:text-[10px] text-slate-400 mt-0.5 sm:mt-1 hidden sm:flex items-center justify-center gap-2 overflow-hidden flex-wrap">
+                    <span class="inline-flex items-center gap-1"><kbd class="hud-key text-[9px] min-w-[1.1rem] h-[1.1rem]">WASD</kbd> Drive</span>
+                    <span class="text-slate-600">•</span>
+                    <span class="inline-flex items-center gap-1"><kbd class="hud-key text-[9px] min-w-[1.1rem] h-[1.1rem]">SHIFT</kbd> Nitro</span>
+                    <span class="text-slate-600">•</span>
+                    <span class="inline-flex items-center gap-1"><kbd class="hud-key text-[9px] min-w-[1.1rem] h-[1.1rem]">SPACE</kbd> Brake</span>
+                </div>
             </div>
         </div>
 
-        <!-- Top Right Minimap + Speedometer -->
-        <div class="fixed top-3 right-3 z-20 flex flex-col items-end gap-2 pointer-events-none">
-            <div id="minimapContainer" class="glass-hud p-1.5 rounded-full shadow-2xl pointer-events-auto cursor-pointer hover:scale-105 transition-transform" title="Click to view full map [M]">
-                <canvas id="minimapCanvas" width="136" height="136" class="rounded-full block"></canvas>
+        <!-- Top Right Cockpit: Minimap + Speedometer -->
+        <div class="fixed top-2.5 right-2.5 sm:top-3 sm:right-3 z-20 flex sm:flex-col flex-row-reverse items-end gap-2 sm:gap-2.5 pointer-events-none select-none">
+            <!-- Minimap -->
+            <div id="minimapContainer" class="relative glass-card p-1 rounded-full shadow-2xl pointer-events-auto cursor-pointer hover:border-amber-400/40 transition-all group" title="Click to view full map [M]">
+                <canvas id="minimapCanvas" width="136" height="136" class="w-20 h-20 sm:w-[136px] sm:h-[136px] rounded-full block"></canvas>
+                <!-- Compass Cardinal Indicators -->
+                <span class="absolute top-1 left-1/2 -translate-x-1/2 text-[8px] sm:text-[9px] font-display font-extrabold text-amber-400/90 pointer-events-none drop-shadow">N</span>
             </div>
 
-            <!-- Circular Speedometer -->
-            <div class="glass-hud rounded-2xl px-3.5 py-2.5 flex items-center gap-3 shadow-xl">
-                <div class="relative w-16 h-16 flex items-center justify-center">
-                    <svg class="w-16 h-16 -rotate-90" viewBox="0 0 64 64">
-                        <circle cx="32" cy="32" r="26" fill="none" stroke="rgba(255,255,255,0.12)" stroke-width="6"></circle>
-                        <circle id="speedometerArc" cx="32" cy="32" r="26" fill="none" stroke="#facc15" stroke-width="6"
-                                stroke-linecap="round" stroke-dasharray="163.36" stroke-dashoffset="163.36"></circle>
+            <!-- Digital Speedometer Cockpit -->
+            <div class="glass-card rounded-2xl px-2.5 py-1.5 sm:px-4 sm:py-2.5 flex items-center gap-2 sm:gap-3.5 shadow-2xl border border-white/10">
+                <div class="relative w-12 h-12 sm:w-16 sm:h-16 flex items-center justify-center">
+                    <svg class="w-12 h-12 sm:w-16 sm:h-16 -rotate-90" viewBox="0 0 64 64">
+                        <circle cx="32" cy="32" r="26" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="5"></circle>
+                        <circle id="speedometerArc" cx="32" cy="32" r="26" fill="none" stroke="#facc15" stroke-width="5"
+                                stroke-linecap="round" stroke-dasharray="163.36" stroke-dashoffset="163.36" class="transition-all duration-100"></circle>
                     </svg>
                     <div class="absolute inset-0 flex flex-col items-center justify-center">
-                        <span id="speedometerValue" class="text-base font-black text-white leading-none">0</span>
-                        <span class="text-[9px] font-bold text-slate-400 mt-0.5">KM/H</span>
+                        <span id="speedometerValue" class="font-display text-base sm:text-xl font-black text-white leading-none">0</span>
+                        <span class="text-[7px] sm:text-[8px] font-bold text-slate-400 uppercase tracking-wider mt-0.5">KM/H</span>
                     </div>
                 </div>
-                <div class="text-right">
-                    <div class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Gear / Mode</div>
-                    <div id="speedometerGear" class="text-base font-black text-amber-400">P</div>
-                    <div id="fpsCounter" class="text-[10px] text-emerald-400 font-semibold mt-0.5">60 FPS</div>
+                <div class="text-right flex flex-col items-end">
+                    <div class="text-[8px] sm:text-[9px] font-bold uppercase tracking-wider text-slate-400">Gear</div>
+                    <div id="speedometerGear" class="font-display text-xs sm:text-sm font-black text-amber-400 px-1.5 py-0.2 sm:px-2 sm:py-0.5 rounded bg-amber-400/10 border border-amber-400/20 mt-0.5">P</div>
+                    <div class="flex items-center gap-1 mt-0.5 sm:mt-1">
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                        <span id="fpsCounter" class="font-mono text-[9px] sm:text-[10px] text-emerald-400 font-semibold">60 FPS</span>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- Mobile Touch Controls -->
-        <div class="fixed bottom-3 left-3 right-3 z-20 flex justify-between items-end md:hidden pointer-events-none">
-            <div class="flex gap-2 pointer-events-auto">
-                <button id="btnLeft" type="button" class="glass-hud w-14 h-14 rounded-2xl text-white font-black text-xl active:bg-amber-500/40">◀</button>
-                <button id="btnRight" type="button" class="glass-hud w-14 h-14 rounded-2xl text-white font-black text-xl active:bg-amber-500/40">▶</button>
+        <!-- Professional Ergonomic Mobile Touch Controls Layer -->
+        <div id="mobileTouchLayer" class="fixed inset-x-0 bottom-0 z-30 pointer-events-none p-3 sm:p-5 flex justify-between items-end select-none">
+            <!-- Left Side: Quick Utility Pill & Steering Buttons -->
+            <div class="flex flex-col gap-2 pointer-events-auto">
+                <!-- Mobile Utility Buttons (Horn, Camera, Radio, GPS) -->
+                <div class="flex items-center gap-1.5">
+                    <button id="mobileHornBtn" type="button" class="touch-btn w-11 h-11 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl glass-hud border border-emerald-500/30 text-emerald-300 flex items-center justify-center active:bg-emerald-500/30 active:scale-95 shadow-lg transition" title="Horn">
+                        <svg class="w-4 h-4 sm:w-5 sm:h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11v3a1 1 0 0 0 1 1h3l5 4V5L7 9H4a1 1 0 0 0-1 1z"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+                    </button>
+                    <button id="mobileCamBtn" type="button" class="touch-btn w-11 h-11 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl glass-hud border border-white/10 text-slate-200 flex items-center justify-center active:bg-white/20 active:scale-95 shadow-lg transition" title="Change Camera View">
+                        <svg class="w-4 h-4 sm:w-5 sm:h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m16 13 5.223 3.482a.5.5 0 0 0 .777-.416V7.87a.5.5 0 0 0-.752-.432L16 10.5"/><rect x="2" y="6" width="14" height="12" rx="2"/></svg>
+                    </button>
+                    <button id="mobileRadioBtn" type="button" class="touch-btn w-11 h-11 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl glass-hud border border-pink-500/30 text-pink-300 flex items-center justify-center active:bg-pink-500/30 active:scale-95 shadow-lg transition" title="Bollywood Radio">
+                        <svg class="w-4 h-4 sm:w-5 sm:h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="2"/><path d="M16.24 7.76a6 6 0 0 1 0 8.49m-8.48-.01a6 6 0 0 1 0-8.49m11.31-2.82a10 10 0 0 1 0 14.14m-14.14 0a10 10 0 0 1 0-14.14"/></svg>
+                    </button>
+                    <button id="mobileMapBtn" type="button" class="touch-btn w-11 h-11 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl glass-hud border border-indigo-500/30 text-indigo-300 flex items-center justify-center active:bg-indigo-500/30 active:scale-95 shadow-lg transition" title="GPS Map">
+                        <svg class="w-4 h-4 sm:w-5 sm:h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/><line x1="9" x2="9" y1="3" y2="18"/><line x1="15" x2="15" y1="6" y2="21"/></svg>
+                    </button>
+                </div>
+
+                <!-- Steering Buttons -->
+                <div class="flex items-center gap-2">
+                    <button id="btnLeft" type="button" class="touch-btn w-16 h-16 sm:w-18 sm:h-18 rounded-2xl glass-card border border-white/15 text-white flex flex-col items-center justify-center active:bg-amber-400/30 active:border-amber-400 active:scale-95 shadow-2xl transition">
+                        <svg class="w-7 h-7 text-amber-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m15 18-6-6 6-6"/></svg>
+                        <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">LEFT</span>
+                    </button>
+                    <button id="btnRight" type="button" class="touch-btn w-16 h-16 sm:w-18 sm:h-18 rounded-2xl glass-card border border-white/15 text-white flex flex-col items-center justify-center active:bg-amber-400/30 active:border-amber-400 active:scale-95 shadow-2xl transition">
+                        <svg class="w-7 h-7 text-amber-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m9 18 6-6-6-6"/></svg>
+                        <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">RIGHT</span>
+                    </button>
+                </div>
             </div>
-            <div class="flex gap-2 pointer-events-auto">
-                <button id="btnNitro" type="button" class="glass-hud px-3 h-14 rounded-2xl text-sky-300 font-black text-xs active:bg-sky-500/40">NITRO</button>
-                <button id="btnBrake" type="button" class="glass-hud px-3 h-14 rounded-2xl text-rose-300 font-black text-xs active:bg-rose-500/40">BRAKE</button>
-                <button id="btnGas" type="button" class="glass-hud w-14 h-14 rounded-2xl text-emerald-300 font-black text-sm active:bg-emerald-500/40">GAS</button>
+
+            <!-- Right Side: Secondary Actions & Driving Pedals -->
+            <div class="flex flex-col items-end gap-2 pointer-events-auto">
+                <!-- Secondary Row (Step Out / Enter Car + Nitro) -->
+                <div class="flex items-center gap-2">
+                    <button id="mobileExitBtn" type="button" class="touch-btn px-3.5 h-11 sm:h-12 rounded-xl sm:rounded-2xl glass-hud border border-amber-400/30 text-amber-300 flex items-center gap-1.5 active:bg-amber-400/30 active:scale-95 shadow-lg transition" title="Step Out or Enter Vehicle">
+                        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 4h6a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-6"/><path d="m9 16 4-4-4-4"/><path d="M13 12H3"/></svg>
+                        <span id="mobileExitText" class="font-bold text-xs">Step Out</span>
+                    </button>
+
+                    <button id="btnNitro" type="button" class="touch-btn px-4 h-11 sm:h-12 rounded-xl sm:rounded-2xl glass-hud border border-sky-400/40 bg-sky-500/10 text-sky-300 flex items-center gap-1.5 active:bg-sky-500/40 active:scale-95 shadow-lg shadow-sky-500/15 transition" title="Nitro Boost">
+                        <svg class="w-4 h-4 fill-current animate-pulse text-sky-400" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                        <span class="font-display font-black text-xs uppercase tracking-wider">NITRO</span>
+                    </button>
+                </div>
+
+                <!-- Pedals Row (Brake, Reverse, Gas) -->
+                <div class="flex items-center gap-2">
+                    <!-- Brake / Handbrake / Jump -->
+                    <button id="btnBrake" type="button" class="touch-btn w-15 h-18 sm:w-16 sm:h-20 py-1.5 sm:py-2 rounded-2xl glass-card border border-rose-500/30 text-rose-300 flex flex-col items-center justify-center active:bg-rose-500/30 active:border-rose-400 active:scale-95 shadow-xl transition">
+                        <svg class="w-5 h-5 sm:w-6 sm:h-6 text-rose-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/><line x1="4.93" x2="9.17" y1="4.93" y2="9.17"/><line x1="14.83" x2="19.07" y1="14.83" y2="19.07"/></svg>
+                        <span id="btnBrakeText" class="text-[9px] font-black uppercase tracking-wider mt-0.5">BRAKE</span>
+                    </button>
+
+                    <!-- Reverse / Back up Pedal -->
+                    <button id="btnReverse" type="button" class="touch-btn w-15 h-18 sm:w-16 sm:h-20 py-1.5 sm:py-2 rounded-2xl glass-card border border-amber-500/30 text-amber-300 flex flex-col items-center justify-center active:bg-amber-500/30 active:border-amber-400 active:scale-95 shadow-xl transition">
+                        <svg class="w-5 h-5 sm:w-6 sm:h-6 text-amber-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m6 9 6 6 6-6"/></svg>
+                        <span id="btnReverseText" class="text-[9px] font-black uppercase tracking-wider mt-0.5">REV</span>
+                    </button>
+
+                    <!-- Gas / Accelerate Forward Pedal -->
+                    <button id="btnGas" type="button" class="touch-btn w-18 h-18 sm:w-22 sm:h-22 py-1.5 sm:py-2 rounded-2xl bg-gradient-to-t from-emerald-600/35 to-emerald-500/20 border-2 border-emerald-400/50 text-emerald-300 flex flex-col items-center justify-center active:bg-emerald-500/40 active:border-emerald-300 active:scale-95 shadow-2xl shadow-emerald-500/20 transition">
+                        <svg class="w-7 h-7 sm:w-8 sm:h-8 text-emerald-300 animate-pulse" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m18 15-6-6-6 6"/></svg>
+                        <span id="btnGasText" class="text-[10px] font-black tracking-wider uppercase mt-0.5">GAS</span>
+                    </button>
+                </div>
             </div>
         </div>
     </div>
 
     <!-- Full Screen Island GPS Map Modal -->
-    <div id="mapModal" class="hidden fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-5">
-        <div class="glass-hud rounded-3xl p-4 sm:p-5 max-w-xl w-full text-white shadow-2xl flex flex-col gap-3 max-h-[95vh] border border-slate-700/60">
+    <div id="mapModal" class="hidden fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-5 select-none">
+        <div class="glass-card rounded-3xl p-5 sm:p-6 max-w-xl w-full text-white shadow-2xl flex flex-col gap-3 max-h-[95vh] border border-white/10">
             <!-- Map Header -->
-            <div class="flex items-center justify-between pb-2 border-b border-slate-800">
-                <div class="flex items-center gap-2.5">
-                    <span class="text-2xl">🗺️</span>
+            <div class="flex items-center justify-between pb-3 border-b border-white/10">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400">
+                        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/><line x1="9" x2="9" y1="3" y2="18"/><line x1="15" x2="15" y1="6" y2="21"/></svg>
+                    </div>
                     <div>
-                        <h3 class="text-base sm:text-lg font-black text-amber-300 tracking-wide">Mumbai Island Satellite GPS</h3>
-                        <div class="text-[11px] text-slate-400">Total Island Map: 8.4 km × 8.4 km</div>
+                        <h3 class="font-display text-base sm:text-lg font-bold text-amber-300 tracking-wide">Mumbai Island Satellite GPS</h3>
+                        <div class="text-[11px] text-slate-400">Total Island Territory: 8.4 km × 8.4 km</div>
                     </div>
                 </div>
                 <div class="flex items-center gap-3">
@@ -262,78 +597,84 @@
                         <div class="text-slate-400 font-semibold">Coordinates</div>
                         <div id="mapCoordsText" class="font-mono text-sky-400 font-bold">X: 250, Z: 250</div>
                     </div>
-                    <button id="closeMapBtn" type="button" class="glass-hud hover:bg-rose-500/30 hover:border-rose-400/50 text-slate-300 hover:text-white px-3 py-1.5 rounded-xl font-bold text-xs transition">
-                        ✕ Close [M]
+                    <button id="closeMapBtn" type="button" class="hud-btn text-slate-300 hover:text-white px-3 py-1.5 rounded-xl text-xs">
+                        <kbd class="hud-key">M</kbd>
+                        <span>Close</span>
                     </button>
                 </div>
             </div>
 
             <!-- Full Map Canvas -->
-            <div class="relative w-full aspect-square max-h-[58vh] rounded-2xl overflow-hidden bg-slate-950 border border-slate-800 shadow-inner flex items-center justify-center">
+            <div class="relative w-full aspect-square max-h-[58vh] rounded-2xl overflow-hidden bg-slate-950 border border-white/10 shadow-inner flex items-center justify-center">
                 <canvas id="fullMapCanvas" width="560" height="560" class="w-full h-full block object-contain"></canvas>
-                <div class="absolute bottom-2.5 left-2.5 glass-hud rounded-lg px-2.5 py-1 text-[10px] text-slate-300 font-semibold pointer-events-none">
-                    North is UP ↑
+                <div class="absolute bottom-2.5 left-2.5 glass-hud rounded-lg px-2.5 py-1 text-[10px] text-slate-300 font-semibold pointer-events-none flex items-center gap-1">
+                    <svg class="w-3 h-3 text-amber-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" x2="12" y1="19" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>
+                    <span>North is UP</span>
                 </div>
-                <div id="mapDistBadge" class="absolute bottom-2.5 right-2.5 glass-hud rounded-lg px-2.5 py-1 text-[10px] text-amber-300 font-bold pointer-events-none">
-                    Target: 620m
+                <div id="mapDistBadge" class="absolute bottom-2.5 right-2.5 glass-hud rounded-lg px-2.5 py-1 text-[10px] text-amber-300 font-bold pointer-events-none flex items-center gap-1 border border-amber-400/20">
+                    <svg class="w-3 h-3 text-amber-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="m4.93 4.93 4.24 4.24"/><path d="m14.83 9.17 4.24-4.24"/></svg>
+                    <span>Target: 620m</span>
                 </div>
             </div>
 
             <!-- Map Legend -->
-            <div class="flex flex-wrap items-center justify-around gap-2 text-[11px] text-slate-300 bg-slate-900/60 rounded-xl p-2.5 border border-slate-800/60">
+            <div class="flex flex-wrap items-center justify-around gap-2 text-[11px] text-slate-300 bg-slate-900/60 rounded-xl p-2.5 border border-white/5">
                 <div class="flex items-center gap-1.5">
-                    <span class="w-3 h-3 rounded-full bg-amber-400 border border-black inline-block"></span>
+                    <span class="w-2.5 h-2.5 rounded-full bg-amber-400 border border-black inline-block shadow-sm"></span>
                     <span class="font-bold text-amber-300">Your Taxi</span>
                 </div>
                 <div class="flex items-center gap-1.5">
-                    <span class="w-3 h-3 rounded-full bg-sky-400 border border-white inline-block"></span>
+                    <span class="w-2.5 h-2.5 rounded-full bg-sky-400 border border-white inline-block shadow-sm"></span>
                     <span>Pickup</span>
                 </div>
                 <div class="flex items-center gap-1.5">
-                    <span class="w-3 h-3 rounded-full bg-amber-500 border border-white inline-block"></span>
+                    <span class="w-2.5 h-2.5 rounded-full bg-amber-500 border border-white inline-block shadow-sm"></span>
                     <span>Dropoff</span>
                 </div>
                 <div class="flex items-center gap-1.5">
                     <span class="w-2.5 h-2.5 rounded-sm bg-amber-500 inline-block"></span>
-                    <span>⛽ Fuel</span>
+                    <span>Fuel Station</span>
                 </div>
                 <div class="flex items-center gap-1.5">
                     <span class="w-2.5 h-2.5 rounded-sm bg-emerald-500 inline-block"></span>
-                    <span>🔧 Repair</span>
+                    <span>Repair Garage</span>
                 </div>
                 <div class="flex items-center gap-1.5">
                     <span class="w-2.5 h-2.5 rounded-sm bg-sky-600 inline-block"></span>
-                    <span>River & Bridges</span>
+                    <span>Sea Link Bridge</span>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- Game Over / Wrecked Modal -->
-    <div id="gameOverModal" class="hidden fixed inset-0 z-40 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4">
-        <div class="glass-hud rounded-3xl p-6 max-w-sm w-full text-center text-white shadow-2xl">
-            <div class="text-4xl mb-2">🚕💥</div>
-            <h2 id="gameOverTitle" class="text-2xl font-black text-rose-400">Taxi Wrecked!</h2>
-            <p id="gameOverReason" class="text-sm text-slate-300 mt-1">Your cab took too much damage.</p>
-            <div class="mt-4 bg-slate-900/70 rounded-2xl p-3 flex justify-around">
+    <div id="gameOverModal" class="hidden fixed inset-0 z-40 bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-4 select-none">
+        <div class="glass-card rounded-3xl p-7 max-w-sm w-full text-center text-white shadow-2xl border border-rose-500/30">
+            <div class="w-14 h-14 rounded-2xl bg-rose-500/10 border border-rose-500/20 flex items-center justify-center text-rose-400 mx-auto mb-3">
+                <svg class="w-7 h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" x2="12" y1="9" y2="13"/><line x1="12" x2="12.01" y1="17" y2="17"/></svg>
+            </div>
+            <h2 id="gameOverTitle" class="font-display text-2xl font-black text-rose-400 tracking-wide">Taxi Wrecked!</h2>
+            <p id="gameOverReason" class="text-xs text-slate-300 mt-1">Your cab took excessive collision impact.</p>
+            <div class="mt-4 bg-slate-900/70 rounded-2xl p-3 flex justify-around border border-white/5">
                 <div>
                     <div class="text-[10px] text-slate-400 uppercase font-bold">Total Cash</div>
-                    <div id="finalCash" class="text-xl font-black text-emerald-400">$0</div>
+                    <div id="finalCash" class="font-display text-xl font-black text-emerald-400">$0</div>
                 </div>
                 <div>
                     <div class="text-[10px] text-slate-400 uppercase font-bold">Fares</div>
-                    <div id="finalFares" class="text-xl font-black text-amber-300">0</div>
+                    <div id="finalFares" class="font-display text-xl font-black text-amber-300">0</div>
                 </div>
             </div>
-            <button id="restartBtn" type="button" class="mt-5 w-full py-3 rounded-2xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-sm tracking-wide shadow-lg transition">
-                Tow & Repair Taxi ($0)
+            <button id="restartBtn" type="button" class="mt-5 w-full py-3 rounded-2xl bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-slate-950 font-display font-black text-xs uppercase tracking-wider shadow-lg shadow-amber-500/20 transition flex items-center justify-center gap-2">
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+                <span>Tow & Repair Taxi ($0)</span>
             </button>
         </div>
     </div>
 
     <!-- Floating Toast Notification -->
     <div id="toastBox" class="fixed bottom-24 left-1/2 -translate-x-1/2 z-50 pointer-events-none opacity-0 transition-opacity duration-200">
-        <div id="toastText" class="glass-hud text-amber-300 font-extrabold text-sm px-4 py-2 rounded-full shadow-lg"></div>
+        <div id="toastText" class="glass-card text-amber-300 font-bold text-xs sm:text-sm px-5 py-2.5 rounded-full shadow-2xl border border-amber-400/30 flex items-center gap-2"></div>
     </div>
 
     <!-- Modular Game Scripts (Execution Order) -->
@@ -348,4 +689,3 @@
     <script src="js/game.js"></script>
 </body>
 </html>
-

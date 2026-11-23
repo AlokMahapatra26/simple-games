@@ -57,7 +57,27 @@ function drawMiniMap() {
         ctx.fillRect(RIVER_X - RIVER_WIDTH / 2 - 25, bz - ROAD_WIDTH / 2, RIVER_WIDTH + 50, ROAD_WIDTH);
     }
 
-    // 4. Fuel & Repair Service Stations
+    // 4. Grand Sea Link Bridge Deck
+    ctx.fillStyle = '#475569';
+    ctx.fillRect(BRIDGE_START_X, BRIDGE_Z - BRIDGE_WIDTH / 2, BRIDGE_END_X - BRIDGE_START_X, BRIDGE_WIDTH);
+    ctx.fillStyle = '#facc15';
+    ctx.fillRect(BRIDGE_START_X, BRIDGE_Z - 2.5, BRIDGE_END_X - BRIDGE_START_X, 5);
+
+    // 5. Palm Resort Island Land & Roads (Radar Minimap)
+    ctx.fillStyle = '#fde68a';
+    ctx.fillRect(ISLAND2_CENTER_X - ISLAND2_HALF_W - 180, ISLAND2_CENTER_Z - ISLAND2_HALF_D - 180, (ISLAND2_HALF_W + 180) * 2, (ISLAND2_HALF_D + 180) * 2);
+    ctx.fillStyle = '#065f46';
+    ctx.fillRect(ISLAND2_CENTER_X - ISLAND2_HALF_W, ISLAND2_CENTER_Z - ISLAND2_HALF_D, ISLAND2_HALF_W * 2, ISLAND2_HALF_D * 2);
+
+    ctx.fillStyle = '#334155';
+    ctx.fillRect(ISLAND2_CENTER_X - ISLAND2_HALF_W, -45, ISLAND2_HALF_W * 2, 90);
+    ctx.fillRect(ISLAND2_CENTER_X - ISLAND2_HALF_W * 0.85, 1000 - 37, ISLAND2_HALF_W * 1.7, 75);
+    ctx.fillRect(ISLAND2_CENTER_X - ISLAND2_HALF_W * 0.85, -1000 - 37, ISLAND2_HALF_W * 1.7, 75);
+    ctx.fillRect(7200 - 37, -1000, 75, 2000);
+    ctx.fillRect(8200 - 42, -1000, 85, 2000);
+    ctx.fillRect(9200 - 37, -1000, 75, 2000);
+
+    // 6. Fuel & Repair Service Stations
     for (let i = 0; i < serviceZones.length; i++) {
         const sz = serviceZones[i];
         ctx.fillStyle = sz.type === 'fuel' ? '#f59e0b' : '#10b981';
@@ -185,12 +205,14 @@ function drawFullMap() {
     const pz = player.inCar ? playerCar.z : player.z;
     const pHead = player.inCar ? playerCar.heading : player.heading;
 
-    // Scale whole island (MAP_HALF * 2 = 8400 units) to fit into canvas with padding
-    const worldSpan = MAP_HALF * 2 + 800; // 9200 units
-    const mapScale = (w * 0.94) / worldSpan;
+    // Scale world across both Main City Island and Palm Resort Island
+    const worldSpanX = 15800;
+    const worldSpanZ = 9400;
+    const mapScale = Math.min((w * 0.94) / worldSpanX, (h * 0.92) / worldSpanZ);
+    const mapOffsetX = 2850;
 
     // Helper: World (X, Z) to Map (X, Y) where North (+Z) is UP
-    const toMapX = (wx) => cx + wx * mapScale;
+    const toMapX = (wx) => cx + (wx - mapOffsetX) * mapScale;
     const toMapY = (wz) => cy - wz * mapScale;
 
     ctx.clearRect(0, 0, w, h);
@@ -199,49 +221,114 @@ function drawFullMap() {
     ctx.fillStyle = '#0284c7';
     ctx.fillRect(0, 0, w, h);
 
-    // 2. Sandy Beach Perimeter
-    const beachHalf = (MAP_HALF + 210) * mapScale;
+    // 2. MAIN ISLAND: Sandy Beach Perimeter & Landmass
+    const mainBeachX = toMapX(-MAP_HALF - 210);
+    const mainBeachY = toMapY(MAP_HALF + 210);
+    const mainBeachW = (MAP_HALF * 2 + 420) * mapScale;
+    const mainBeachH = (MAP_HALF * 2 + 420) * mapScale;
     ctx.fillStyle = '#fde68a';
-    ctx.fillRect(cx - beachHalf, cy - beachHalf, beachHalf * 2, beachHalf * 2);
+    ctx.fillRect(mainBeachX, mainBeachY, mainBeachW, mainBeachH);
 
-    // 3. City Ground Landmass
-    const cityHalf = MAP_HALF * mapScale;
+    const mainCityX = toMapX(-MAP_HALF);
+    const mainCityY = toMapY(MAP_HALF);
+    const mainCityW = (MAP_HALF * 2) * mapScale;
+    const mainCityH = (MAP_HALF * 2) * mapScale;
     ctx.fillStyle = '#1e293b';
-    ctx.fillRect(cx - cityHalf, cy - cityHalf, cityHalf * 2, cityHalf * 2);
+    ctx.fillRect(mainCityX, mainCityY, mainCityW, mainCityH);
 
-    // 4. Central River Channel
+    // Main Island River Channel
     const riverLeft = toMapX(RIVER_X - RIVER_WIDTH / 2);
-    const riverW = RIVER_WIDTH * mapScale;
+    const riverW = Math.max(2, RIVER_WIDTH * mapScale);
     ctx.fillStyle = '#0284c7';
-    ctx.fillRect(riverLeft, cy - cityHalf, riverW, cityHalf * 2);
+    ctx.fillRect(riverLeft, mainCityY, riverW, mainCityH);
 
-    // 5. City Road Network
-    const roadW = Math.max(3.5, ROAD_WIDTH * mapScale);
+    // Main Island City Road Network
+    const roadW = Math.max(2.5, ROAD_WIDTH * mapScale);
     ctx.fillStyle = '#334155';
-
     for (let pos = -MAP_HALF + GRID_STEP; pos <= MAP_HALF - GRID_STEP; pos += GRID_STEP) {
-        // N-S Avenues
         if (Math.abs(pos - RIVER_X) > RIVER_WIDTH * 0.7) {
-            ctx.fillRect(toMapX(pos) - roadW / 2, cy - cityHalf, roadW, cityHalf * 2);
+            ctx.fillRect(toMapX(pos) - roadW / 2, mainCityY, roadW, mainCityH);
         }
-        // E-W Avenues
-        ctx.fillRect(cx - cityHalf, toMapY(pos) - roadW / 2, cityHalf * 2, roadW);
+        ctx.fillRect(mainCityX, toMapY(pos) - roadW / 2, mainCityW, roadW);
     }
 
-    // 6. River Bridges
+    // River Bridges
     ctx.fillStyle = '#64748b';
     for (let bz = -MAP_HALF + GRID_STEP; bz <= MAP_HALF - GRID_STEP; bz += GRID_STEP) {
-        ctx.fillRect(riverLeft - 2, toMapY(bz) - roadW / 2, riverW + 4, roadW);
-        ctx.fillStyle = '#facc15';
-        ctx.fillRect(riverLeft - 2, toMapY(bz) - roadW / 2, riverW + 4, 1);
-        ctx.fillRect(riverLeft - 2, toMapY(bz) + roadW / 2 - 1, riverW + 4, 1);
-        ctx.fillStyle = '#64748b';
+        ctx.fillRect(riverLeft - 1, toMapY(bz) - roadW / 2, riverW + 2, roadW);
     }
 
-    // 7. Elevated Highway Overpass
+    // Elevated Highway Overpass
     const hwY = toMapY(HIGHWAY_Z);
     ctx.fillStyle = '#475569';
-    ctx.fillRect(cx - cityHalf * 0.9, hwY - 2.5, cityHalf * 1.8, 5);
+    ctx.fillRect(mainCityX + mainCityW * 0.05, hwY - 2, mainCityW * 0.9, 4);
+
+    // 3. GRAND SEA LINK SUSPENSION BRIDGE
+    const bridgeStartX = toMapX(BRIDGE_START_X);
+    const bridgeEndX = toMapX(BRIDGE_END_X);
+    const bridgeY = toMapY(BRIDGE_Z);
+    const bridgeW = Math.max(4, BRIDGE_WIDTH * mapScale);
+
+    ctx.fillStyle = '#475569';
+    ctx.fillRect(bridgeStartX, bridgeY - bridgeW / 2, bridgeEndX - bridgeStartX, bridgeW);
+
+    // Yellow center divider line on bridge
+    ctx.fillStyle = '#facc15';
+    ctx.fillRect(bridgeStartX, bridgeY - 0.75, bridgeEndX - bridgeStartX, 1.5);
+
+    // Bridge Suspension Towers
+    [BRIDGE_START_X + 750, BRIDGE_START_X + 1600].forEach(tx => {
+        const bx = toMapX(tx);
+        ctx.fillStyle = '#e2e8f0';
+        ctx.fillRect(bx - 3, bridgeY - bridgeW / 2 - 4, 6, bridgeW + 8);
+        ctx.fillStyle = '#ef4444';
+        ctx.fillRect(bx - 1.5, bridgeY - bridgeW / 2 - 6, 3, 3);
+        ctx.fillRect(bx - 1.5, bridgeY + bridgeW / 2 + 3, 3, 3);
+    });
+
+    // 4. SECOND ISLAND (PALM RESORT & MARINA ISLAND)
+    const is2BeachX = toMapX(ISLAND2_CENTER_X - ISLAND2_HALF_W - 200);
+    const is2BeachY = toMapY(ISLAND2_CENTER_Z + ISLAND2_HALF_D + 200);
+    const is2BeachW = (ISLAND2_HALF_W * 2 + 400) * mapScale;
+    const is2BeachH = (ISLAND2_HALF_D * 2 + 400) * mapScale;
+    ctx.fillStyle = '#fde68a';
+    ctx.fillRect(is2BeachX, is2BeachY, is2BeachW, is2BeachH);
+
+    const is2GroundX = toMapX(ISLAND2_CENTER_X - ISLAND2_HALF_W);
+    const is2GroundY = toMapY(ISLAND2_CENTER_Z + ISLAND2_HALF_D);
+    const is2GroundW = (ISLAND2_HALF_W * 2) * mapScale;
+    const is2GroundH = (ISLAND2_HALF_D * 2) * mapScale;
+    ctx.fillStyle = '#065f46'; // Vibrant tropical resort green
+    ctx.fillRect(is2GroundX, is2GroundY, is2GroundW, is2GroundH);
+
+    // Island 2 Road Network
+    ctx.fillStyle = '#334155';
+    // Central Boulevard
+    const is2CenterY = toMapY(0);
+    ctx.fillRect(is2GroundX, is2CenterY - roadW / 2, is2GroundW, roadW);
+    // North & South Coastal Avenues
+    ctx.fillRect(toMapX(ISLAND2_CENTER_X - ISLAND2_HALF_W * 0.85), toMapY(1000) - roadW / 2, is2GroundW * 0.85, roadW);
+    ctx.fillRect(toMapX(ISLAND2_CENTER_X - ISLAND2_HALF_W * 0.85), toMapY(-1000) - roadW / 2, is2GroundW * 0.85, roadW);
+    // Cross Roads
+    [7200, 8200, 9200].forEach(rx => {
+        ctx.fillRect(toMapX(rx) - roadW / 2, toMapY(1000), roadW, Math.abs(toMapY(-1000) - toMapY(1000)));
+    });
+
+    // Marina Pier extending into ocean
+    ctx.fillStyle = '#475569';
+    ctx.fillRect(toMapX(8200) - 2.5, toMapY(-1000), 5, Math.abs(toMapY(-1550) - toMapY(-1000)));
+
+    // Island Labels
+    ctx.font = 'bold 10px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillStyle = '#cbd5e1';
+    ctx.fillText('MUMBAI CITY ISLAND', mainCityX + mainCityW / 2, mainCityY + 22);
+
+    ctx.fillStyle = '#facc15';
+    ctx.fillText('BANDRA-WORLI SEA LINK', (bridgeStartX + bridgeEndX) / 2, bridgeY - 8);
+
+    ctx.fillStyle = '#38bdf8';
+    ctx.fillText('PALM RESORT & MARINA ISLAND', is2GroundX + is2GroundW / 2, is2GroundY + 22);
 
     // 8. Fuel & Repair Service Stations
     for (let i = 0; i < serviceZones.length; i++) {

@@ -35,10 +35,10 @@ function spawnNewPickup() {
     const dot = document.getElementById('missionDot');
     const title = document.getElementById('missionTitle');
     const timer = document.getElementById('missionTimer');
-    if (dot) dot.className = 'w-2.5 h-2.5 rounded-full bg-sky-400 animate-pulse';
+    if (dot) dot.className = 'w-2.5 h-2.5 rounded-full bg-sky-400 shadow-sm shadow-sky-400';
     if (title) {
         title.textContent = 'Drive to Blue Pickup Zone';
-        title.className = 'text-xs sm:text-sm font-extrabold tracking-wide text-sky-300 uppercase';
+        title.className = 'font-display font-bold tracking-wider text-xs sm:text-sm text-sky-200 uppercase truncate';
     }
     if (timer) timer.classList.add('hidden');
 }
@@ -68,10 +68,10 @@ function startDropoff() {
     const dot = document.getElementById('missionDot');
     const title = document.getElementById('missionTitle');
     const timer = document.getElementById('missionTimer');
-    if (dot) dot.className = 'w-2.5 h-2.5 rounded-full bg-amber-400 animate-pulse';
+    if (dot) dot.className = 'w-2.5 h-2.5 rounded-full bg-amber-400 shadow-sm shadow-amber-400';
     if (title) {
         title.textContent = `Drop Off Passenger ($${mission.payout})`;
-        title.className = 'text-xs sm:text-sm font-extrabold tracking-wide text-amber-300 uppercase';
+        title.className = 'font-display font-bold tracking-wider text-xs sm:text-sm text-amber-300 uppercase truncate';
     }
     if (timer) timer.classList.remove('hidden');
     showToast(`Passenger aboard! Payout: $${mission.payout}`);
@@ -92,26 +92,36 @@ function triggerGameOver(title, reason) {
 }
 
 function updateTraffic(dt) {
+    const refX = playerCar ? playerCar.x : (player ? player.x : 0);
+    const refZ = playerCar ? playerCar.z : (player ? player.z : 0);
+
     for (let i = 0; i < cars.length; i++) {
         const c = cars[i];
-        if (c !== playerCar) {
+        const isPlayer = (c === playerCar);
+        const dx = isPlayer ? 0 : (c.x - refX);
+        const dz = isPlayer ? 0 : (c.z - refZ);
+        const distSq = isPlayer ? 0 : (dx * dx + dz * dz);
+
+        if (!isPlayer) {
             if (c.aiAxis === 'z') {
                 c.z += c.speed * c.aiDir * dt;
-                if (c.z > MAP_HALF - 200) { c.aiDir = -1; c.heading = Math.PI; }
-                if (c.z < -MAP_HALF + 200) { c.aiDir = 1; c.heading = 0; }
+                const maxZ = c.x > BRIDGE_START_X ? (ISLAND2_CENTER_Z + ISLAND2_HALF_D - 200) : (MAP_HALF - 200);
+                const minZ = c.x > BRIDGE_START_X ? (ISLAND2_CENTER_Z - ISLAND2_HALF_D + 200) : (-MAP_HALF + 200);
+                if (c.z > maxZ) { c.aiDir = -1; c.heading = Math.PI; }
+                if (c.z < minZ) { c.aiDir = 1; c.heading = 0; }
             } else {
                 c.x += c.speed * c.aiDir * dt;
-                if (c.x > MAP_HALF - 200) { c.aiDir = -1; c.heading = -Math.PI / 2; }
-                if (c.x < -MAP_HALF + 200) { c.aiDir = 1; c.heading = Math.PI / 2; }
+                const maxX = c.x >= BRIDGE_START_X ? (ISLAND2_CENTER_X + ISLAND2_HALF_W - 200) : (MAP_HALF - 200);
+                const minX = c.x >= BRIDGE_START_X ? (BRIDGE_START_X + 100) : (-MAP_HALF + 200);
+                if (c.x > maxX) { c.aiDir = -1; c.heading = -Math.PI / 2; }
+                if (c.x < minX) { c.aiDir = 1; c.heading = Math.PI / 2; }
             }
             c.mesh.position.set(c.x, 0, c.z);
             c.mesh.rotation.y = c.heading;
 
-            // Car-to-car bump with player taxi (only when cruising)
-            if (!inMainMenu && player.inCar && playerCar) {
-                const dx = playerCar.x - c.x;
-                const dz = playerCar.z - c.z;
-                const dist = Math.hypot(dx, dz);
+            // Car-to-car bump with player taxi (only if within close proximity: < 180 units)
+            if (!inMainMenu && player.inCar && playerCar && distSq < 32400) {
+                const dist = Math.sqrt(distSq);
                 if (dist > 0.1 && dist < 13.5) {
                     const push = (13.5 - dist) * 0.6;
                     playerCar.x += (dx / dist) * push;
@@ -123,19 +133,24 @@ function updateTraffic(dt) {
             }
         }
 
-        // Spin wheels
-        const wheelSpin = (c.speed * dt) / 1.75;
-        for (let w = 0; w < c.wheels.length; w++) {
-            c.wheels[w].rotation.x += wheelSpin;
-        }
-        for (let p = 0; p < c.frontPivots.length; p++) {
-            c.frontPivots[p].rotation.y = c.steerAngle || 0;
-        }
-        if (c.steeringWheel) {
-            c.steeringWheel.rotation.z = -(c.steerAngle || 0) * 4.2;
+        // Distance LOD: Skip wheel & pivot matrix transformations for distant cars (> 1200 units)
+        if (isPlayer || distSq < 1440000) {
+            const wheelSpin = (c.speed * dt) / 1.75;
+            for (let w = 0; w < c.wheels.length; w++) {
+                c.wheels[w].rotation.x += wheelSpin;
+            }
+            for (let p = 0; p < c.frontPivots.length; p++) {
+                c.frontPivots[p].rotation.y = c.steerAngle || 0;
+            }
+            if (c.steeringWheel) {
+                c.steeringWheel.rotation.z = -(c.steerAngle || 0) * 4.2;
+            }
         }
     }
 }
+
+// Pre-allocated reusable Color object to eliminate 60 FPS Garbage Collection pauses
+const cachedSkyCol = new THREE.Color();
 
 function update(dt) {
     if (isGameOver) return;
@@ -148,9 +163,9 @@ function update(dt) {
     const sunFactor = Math.max(0, Math.sin(sunAngle));
     const isNight = sunFactor < 0.22;
 
-    const skyCol = new THREE.Color().setHSL(0.56, 0.72, 0.12 + sunFactor * 0.56);
-    scene.background.copy(skyCol);
-    scene.fog.color.copy(skyCol);
+    cachedSkyCol.setHSL(0.56, 0.72, 0.12 + sunFactor * 0.56);
+    scene.background.copy(cachedSkyCol);
+    scene.fog.color.copy(cachedSkyCol);
     if (dirLight) dirLight.intensity = 0.22 + sunFactor * 0.85;
     if (ambientLight) ambientLight.intensity = 0.35 + sunFactor * 0.38;
 
@@ -184,7 +199,7 @@ function update(dt) {
         camYawOffset = 0;
 
         const throttle = (keys['KeyW'] || keys['ArrowUp'] || touchState.gas) ? 1 : 0;
-        const reverse = (keys['KeyS'] || keys['ArrowDown']) ? 1 : 0;
+        const reverse = (keys['KeyS'] || keys['ArrowDown'] || touchState.reverse) ? 1 : 0;
         const brake = (keys['Space'] || touchState.brake) ? 1 : 0;
         const steerInput = ((keys['KeyA'] || keys['ArrowLeft'] || touchState.left) ? 1 : 0) -
                            ((keys['KeyD'] || keys['ArrowRight'] || touchState.right) ? 1 : 0);
@@ -243,9 +258,10 @@ function update(dt) {
         const nextX = playerCar.x + Math.sin(playerCar.heading) * playerCar.speed * dt;
         const nextZ = playerCar.z + Math.cos(playerCar.heading) * playerCar.speed * dt;
 
-        // Building & Island Boundary Collisions
+        // Building & Island / Ocean Boundary Collisions
         const hitBldg = checkBuildingCollision(nextX, nextZ, 8.2);
-        if (hitBldg || Math.abs(nextX) > MAP_HALF - 20 || Math.abs(nextZ) > MAP_HALF - 20) {
+        const outOfBounds = !isInsideWorldBounds(nextX, nextZ, 20);
+        if (hitBldg || outOfBounds) {
             const impact = Math.abs(playerCar.speed);
             playCrashSFX(Math.min(1.2, Math.max(0.3, impact / 25)));
             if (impact > 28) {
@@ -295,7 +311,7 @@ function update(dt) {
 
         // GTA-STYLE ON-FOOT HUMAN MOVEMENT + JUMP
         const moveFwd = ((keys['KeyW'] || keys['ArrowUp'] || touchState.gas) ? 1 : 0) -
-                        ((keys['KeyS'] || keys['ArrowDown']) ? 1 : 0);
+                        ((keys['KeyS'] || keys['ArrowDown'] || touchState.reverse) ? 1 : 0);
         const moveSide = ((keys['KeyA'] || keys['ArrowLeft'] || touchState.left) ? 1 : 0) -
                          ((keys['KeyD'] || keys['ArrowRight'] || touchState.right) ? 1 : 0);
         const sprinting = keys['ShiftLeft'] || keys['ShiftRight'] || touchState.nitro;
@@ -328,7 +344,7 @@ function update(dt) {
         }
 
         // Jump & Gravity
-        if (keys['Space'] && player.y <= 0.01) {
+        if ((keys['Space'] || touchState.brake || touchState.jump) && player.y <= 0.01) {
             player.vy = 26;
             playJumpSFX();
         }
@@ -341,10 +357,10 @@ function update(dt) {
 
         const nextPX = player.x + player.vx * dt;
         const nextPZ = player.z + player.vz * dt;
-        if (!checkBuildingCollision(nextPX, player.z, 2.4) && Math.abs(nextPX) < MAP_HALF - 15) {
+        if (!checkBuildingCollision(nextPX, player.z, 2.4) && isInsideWorldBounds(nextPX, player.z, 12)) {
             player.x = nextPX;
         }
-        if (!checkBuildingCollision(player.x, nextPZ, 2.4) && Math.abs(nextPZ) < MAP_HALF - 15) {
+        if (!checkBuildingCollision(player.x, nextPZ, 2.4) && isInsideWorldBounds(player.x, nextPZ, 12)) {
             player.z = nextPZ;
         }
 
@@ -397,7 +413,7 @@ function update(dt) {
         }
     } else if (mission.state === 'dropoff') {
         mission.timer -= dt;
-        const timerEl = document.getElementById('missionTimer');
+        const timerEl = document.getElementById('missionTimerText') || document.getElementById('missionTimer');
         if (timerEl) timerEl.textContent = `${Math.max(0, Math.ceil(mission.timer))}s`;
         if (mission.timer <= 0) {
             showToast('Time expired! Passenger left.');
@@ -514,6 +530,7 @@ function update(dt) {
 let lastTime = 0;
 let frameCount = 0;
 let fpsTimer = 0;
+let miniMapTimer = 0;
 
 function animate(now) {
     requestAnimationFrame(animate);
@@ -532,7 +549,12 @@ function animate(now) {
 
     update(dt);
     if (!inMainMenu) {
-        drawMiniMap();
+        // Throttled 2D Canvas Minimap: 30 FPS update saves 50% Canvas 2D CPU overhead
+        miniMapTimer += dt;
+        if (miniMapTimer >= 0.033) {
+            drawMiniMap();
+            miniMapTimer = 0;
+        }
         if (fullMapOpen) {
             drawFullMap();
         }

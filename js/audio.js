@@ -33,40 +33,40 @@ let tanpuraGain = null;
 const BOLLYWOOD_STATIONS = [
     {
         name: 'OFF',
-        label: '[R] Radio: OFF',
+        label: 'Radio: OFF',
         settingsLabel: 'Radio: OFF',
         toast: 'Radio turned OFF',
         type: 'off'
     },
     {
         name: '90s Hits',
-        label: '[R] 📻 90s Bollywood',
-        settingsLabel: '📻 90s Bollywood Hits',
-        toast: '📻 DesiZone: 90s Bollywood Nostalgia 🎶',
+        label: '90s Bollywood',
+        settingsLabel: '90s Bollywood Hits',
+        toast: 'DesiZone: 90s Bollywood Nostalgia 🎶',
         type: 'stream',
         url: 'https://www.desizoneradio.com/relay3'
     },
     {
         name: '2000s Hits',
-        label: '[R] 📻 Bollywood 2000s',
-        settingsLabel: '📻 Bollywood 2000s',
-        toast: '📻 Bollywood 2000s Golden Hits 🎶',
+        label: 'Bollywood 2000s',
+        settingsLabel: 'Bollywood 2000s Hits',
+        toast: 'Bollywood 2000s Golden Hits 🎶',
         type: 'stream',
         url: 'https://drive.uber.radio/uber/bollywood2000s/icecast.audio'
     },
     {
         name: 'Mirchi Hits',
-        label: '[R] 📻 Mirchi Top Hits',
-        settingsLabel: '📻 Mirchi Top Hits',
-        toast: '📻 Bollywood 2010s & Superhits 🎶',
+        label: 'Mirchi Top Hits',
+        settingsLabel: 'Radio Mirchi Top Hits',
+        toast: 'Bollywood 2010s & Superhits 🎶',
         type: 'stream',
         url: 'https://drive.uber.radio/uber/bollywood2010s/icecast.audio'
     },
     {
         name: 'Desi Sitar',
-        label: '[R] 🪕 Desi Rhythms',
-        settingsLabel: '🪕 Sitar & Tabla Melodies',
-        toast: '🪕 Mumbai Taxi: Bollywood Sitar & Tabla Beats 🎵',
+        label: 'Desi Sitar Beats',
+        settingsLabel: 'Sitar & Tabla Melodies',
+        toast: 'Mumbai Taxi: Sitar & Tabla Melodies 🎵',
         type: 'synth'
     }
 ];
@@ -401,20 +401,39 @@ function updateRadioUI() {
     const station = BOLLYWOOD_STATIONS[radioStationIndex];
     const radioBtn = document.getElementById('radioBtn');
     if (radioBtn) {
-        radioBtn.textContent = station.label;
-        if (station.type !== 'off') {
-            radioBtn.classList.add('ring-2', 'ring-pink-400');
+        const textSpan = document.getElementById('radioBtnText');
+        if (textSpan) {
+            textSpan.textContent = station.label;
         } else {
-            radioBtn.classList.remove('ring-2', 'ring-pink-400');
+            radioBtn.textContent = station.label;
+        }
+        const eqVisualizer = document.getElementById('radioEqVisualizer');
+        if (station.type !== 'off') {
+            radioBtn.classList.add('border-pink-500/50', 'bg-pink-500/15', 'text-pink-300');
+            if (eqVisualizer) eqVisualizer.classList.remove('hidden');
+        } else {
+            radioBtn.classList.remove('border-pink-500/50', 'bg-pink-500/15', 'text-pink-300');
+            if (eqVisualizer) eqVisualizer.classList.add('hidden');
         }
     }
     const settingsRadioToggle = document.getElementById('settingsRadioToggle');
     if (settingsRadioToggle) {
-        settingsRadioToggle.textContent = station.settingsLabel;
         if (station.type !== 'off') {
-            settingsRadioToggle.classList.add('ring-2', 'ring-pink-400');
+            settingsRadioToggle.innerHTML = `
+                <span class="flex items-end gap-0.5 h-3">
+                    <span class="eq-bar eq-1"></span>
+                    <span class="eq-bar eq-2"></span>
+                    <span class="eq-bar eq-3"></span>
+                </span>
+                <span>${station.settingsLabel}</span>
+            `;
+            settingsRadioToggle.className = 'px-3.5 py-1.5 rounded-xl glass-hud border border-pink-500/40 bg-pink-500/20 text-pink-300 font-bold text-xs hover:bg-pink-500/30 transition flex items-center gap-2';
         } else {
-            settingsRadioToggle.classList.remove('ring-2', 'ring-pink-400');
+            settingsRadioToggle.innerHTML = `
+                <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                <span>${station.settingsLabel}</span>
+            `;
+            settingsRadioToggle.className = 'px-3.5 py-1.5 rounded-xl glass-hud text-slate-400 font-bold text-xs hover:bg-slate-800 transition flex items-center gap-2';
         }
     }
 }

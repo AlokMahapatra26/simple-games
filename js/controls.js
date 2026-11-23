@@ -27,8 +27,16 @@ function toggleEnterExitCar() {
         player.mesh.rotation.y = player.heading;
         player.mesh.visible = true;
 
-        const exitBtn = document.getElementById('exitCarBtn');
-        if (exitBtn) exitBtn.textContent = '[E] Enter Car';
+        const exitCarText = document.getElementById('exitCarText');
+        if (exitCarText) exitCarText.textContent = 'Enter Car';
+        const mobileExitText = document.getElementById('mobileExitText');
+        if (mobileExitText) mobileExitText.textContent = 'Enter Car';
+        const btnGasText = document.getElementById('btnGasText');
+        if (btnGasText) btnGasText.textContent = 'FWD';
+        const btnReverseText = document.getElementById('btnReverseText');
+        if (btnReverseText) btnReverseText.textContent = 'BACK';
+        const btnBrakeText = document.getElementById('btnBrakeText');
+        if (btnBrakeText) btnBrakeText.textContent = 'JUMP';
         showToast('On Foot: WASD Move • Cursor Look • Space Jump • E Enter');
     } else {
         // Find nearest vehicle within 26 units
@@ -48,8 +56,16 @@ function toggleEnterExitCar() {
             camYawOffset = 0;
             camPitchOffset = 0.16;
             camFollowYaw = playerCar.heading;
-            const exitBtn = document.getElementById('exitCarBtn');
-            if (exitBtn) exitBtn.textContent = '[E] Step Out';
+            const exitCarText = document.getElementById('exitCarText');
+            if (exitCarText) exitCarText.textContent = 'Step Out';
+            const mobileExitText = document.getElementById('mobileExitText');
+            if (mobileExitText) mobileExitText.textContent = 'Step Out';
+            const btnGasText = document.getElementById('btnGasText');
+            if (btnGasText) btnGasText.textContent = 'GAS';
+            const btnReverseText = document.getElementById('btnReverseText');
+            if (btnReverseText) btnReverseText.textContent = 'REV';
+            const btnBrakeText = document.getElementById('btnBrakeText');
+            if (btnBrakeText) btnBrakeText.textContent = 'BRAKE';
             showToast(playerCar.isTaxi ? 'Back in your Taxi!' : 'Hijacked Traffic Sedan!');
         } else {
             showToast('Walk closer to a car and press [E]');
@@ -83,6 +99,10 @@ function setupControls() {
         if (['Space', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Tab'].includes(e.code)) {
             e.preventDefault();
         }
+        if (inMainMenu && (e.code === 'Space' || e.code === 'Enter')) {
+            startGame();
+            return;
+        }
         if (e.code === 'KeyH' && !keys['KeyH']) {
             playHornSFX(true);
         }
@@ -95,6 +115,11 @@ function setupControls() {
             toggleFullMap();
         }
         if (e.code === 'Escape') {
+            const settingsModal = document.getElementById('settingsModal');
+            if (settingsModal && !settingsModal.classList.contains('hidden')) {
+                settingsModal.classList.add('hidden');
+                return;
+            }
             if (fullMapOpen) {
                 toggleFullMap();
             } else if (!inMainMenu) {
@@ -228,9 +253,16 @@ function setupControls() {
         const hudEl = document.getElementById('inGameHud');
         if (menuEl) menuEl.classList.remove('hidden');
         if (hudEl) hudEl.classList.add('hidden');
-        const startBtn = document.getElementById('startGameBtn');
-        if (startBtn) startBtn.textContent = '▶ Resume Cruising';
+        const startText = document.getElementById('startBtnText');
+        if (startText) startText.textContent = 'Resume Cruising';
+        else {
+            const startBtn = document.getElementById('startGameBtn');
+            if (startBtn) startBtn.textContent = '▶ Resume Cruising';
+        }
     });
+
+    const mainMenuMapBtn = document.getElementById('mainMenuMapBtn');
+    if (mainMenuMapBtn) mainMenuMapBtn.addEventListener('click', toggleFullMap);
 
     const pauseGameBtn = document.getElementById('pauseGameBtn');
     if (pauseGameBtn) {
@@ -251,36 +283,80 @@ function setupControls() {
     // Settings Sliders & Atmosphere Toggles
     const volSlider = document.getElementById('volumeSlider');
     const volVal = document.getElementById('volumeValue');
+    const updateVol = (val) => {
+        const v = Math.max(0, Math.min(100, val));
+        if (volSlider) volSlider.value = v;
+        if (volVal) volVal.textContent = `${v}%`;
+        if (masterGain && audioCtx) {
+            masterGain.gain.setValueAtTime((v / 100) * 0.6, audioCtx.currentTime);
+        }
+    };
+
     if (volSlider && volVal) {
         volSlider.addEventListener('input', (e) => {
-            const val = parseInt(e.target.value, 10);
-            volVal.textContent = `${val}%`;
-            if (masterGain && audioCtx) {
-                masterGain.gain.setValueAtTime((val / 100) * 0.6, audioCtx.currentTime);
-            }
+            updateVol(parseInt(e.target.value, 10));
         });
     }
 
+    const volMuteBtn = document.getElementById('volMuteBtn');
+    if (volMuteBtn) volMuteBtn.addEventListener('click', () => { updateVol(0); showToast('Audio Muted (0%)'); });
+    const volHalfBtn = document.getElementById('volHalfBtn');
+    if (volHalfBtn) volHalfBtn.addEventListener('click', () => { updateVol(50); showToast('Volume 50%'); });
+    const volDefaultBtn = document.getElementById('volDefaultBtn');
+    if (volDefaultBtn) volDefaultBtn.addEventListener('click', () => { updateVol(70); showToast('Volume 70% (Default)'); });
+    const volMaxBtn = document.getElementById('volMaxBtn');
+    if (volMaxBtn) volMaxBtn.addEventListener('click', () => { updateVol(100); showToast('Volume Max (100%)'); });
+
     const setMorningBtn = document.getElementById('setMorningBtn');
+    const setSunsetBtn = document.getElementById('setSunsetBtn');
+    const setNightBtn = document.getElementById('setNightBtn');
+
+    const markAtmosphereActive = (activeBtn) => {
+        [setMorningBtn, setSunsetBtn, setNightBtn].forEach(b => {
+            if (b) b.classList.remove('active');
+        });
+        if (activeBtn) activeBtn.classList.add('active');
+    };
+
     if (setMorningBtn) setMorningBtn.addEventListener('click', () => {
         manualNight = false;
         timeOfDay = 0.28;
-        showToast('Morning Sunlight ☀️');
+        markAtmosphereActive(setMorningBtn);
+        showToast('Atmosphere: Morning Sunlight ☀️');
     });
 
-    const setSunsetBtn = document.getElementById('setSunsetBtn');
     if (setSunsetBtn) setSunsetBtn.addEventListener('click', () => {
         manualNight = true;
         timeOfDay = 0.49;
-        showToast('Golden Sunset Hour 🌅');
+        markAtmosphereActive(setSunsetBtn);
+        showToast('Atmosphere: Golden Sunset Hour 🌅');
     });
 
-    const setNightBtn = document.getElementById('setNightBtn');
     if (setNightBtn) setNightBtn.addEventListener('click', () => {
         manualNight = true;
         timeOfDay = 0.85;
-        showToast('Calm Midnight 🌙');
+        markAtmosphereActive(setNightBtn);
+        showToast('Atmosphere: Calm Midnight 🌙');
     });
+
+    let isPerfMode = true;
+    const perfModeToggle = document.getElementById('perfModeToggle');
+    if (perfModeToggle) {
+        perfModeToggle.addEventListener('click', () => {
+            isPerfMode = !isPerfMode;
+            if (typeof renderer !== 'undefined' && renderer) {
+                const ratio = isPerfMode ? 1.0 : Math.min(window.devicePixelRatio || 1, 2);
+                renderer.setPixelRatio(ratio);
+                perfModeToggle.innerHTML = isPerfMode 
+                    ? `<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg><span>⚡ 60 FPS Smooth</span>`
+                    : `<svg class="w-3.5 h-3.5 text-amber-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg><span>✨ Ultra Retina</span>`;
+                perfModeToggle.className = isPerfMode 
+                    ? 'px-3.5 py-1.5 rounded-xl glass-hud border border-emerald-500/30 bg-emerald-500/15 text-emerald-400 font-bold text-xs hover:bg-emerald-500/25 transition flex items-center gap-1.5'
+                    : 'px-3.5 py-1.5 rounded-xl glass-hud border border-amber-500/30 bg-amber-500/15 text-amber-300 font-bold text-xs hover:bg-amber-500/25 transition flex items-center gap-1.5';
+                showToast(isPerfMode ? 'Graphics: 60 FPS Smooth Mode ⚡' : 'Graphics: Ultra Retina Mode ✨');
+            }
+        });
+    }
 
     const settingsRadioToggle = document.getElementById('settingsRadioToggle');
     if (settingsRadioToggle) {
@@ -347,7 +423,10 @@ function setupControls() {
         if (!player.inCar) {
             player.inCar = true;
             player.mesh.visible = false;
-            if (exitCarBtn) exitCarBtn.textContent = '[E] Step Out';
+            const exitCarText = document.getElementById('exitCarText');
+            if (exitCarText) exitCarText.textContent = 'Step Out';
+            const mobileExitText = document.getElementById('mobileExitText');
+            if (mobileExitText) mobileExitText.textContent = 'Step Out';
         }
         player.x = 250;
         player.z = 250;
@@ -359,20 +438,77 @@ function setupControls() {
         document.getElementById('gameOverModal').classList.add('hidden');
     });
 
-    // Mobile Touch Hold Buttons
+    // Mobile Touch Hold Controls (Dual-Thumb Ergonomics & Multi-Touch)
     const bindHold = (id, prop) => {
         const el = document.getElementById(id);
         if (!el) return;
-        el.addEventListener('touchstart', (e) => { e.preventDefault(); touchState[prop] = true; });
-        el.addEventListener('touchend', (e) => { e.preventDefault(); touchState[prop] = false; });
-        el.addEventListener('mousedown', () => { touchState[prop] = true; });
-        el.addEventListener('mouseup', () => { touchState[prop] = false; });
+        const start = (e) => {
+            if (e && e.cancelable) e.preventDefault();
+            touchState[prop] = true;
+            ensureAudio();
+        };
+        const end = (e) => {
+            if (e && e.cancelable) e.preventDefault();
+            touchState[prop] = false;
+        };
+        el.addEventListener('touchstart', start, { passive: false });
+        el.addEventListener('touchend', end, { passive: false });
+        el.addEventListener('touchcancel', end, { passive: false });
+        el.addEventListener('mousedown', start);
+        el.addEventListener('mouseup', end);
+        el.addEventListener('mouseleave', end);
     };
+
     bindHold('btnLeft', 'left');
     bindHold('btnRight', 'right');
     bindHold('btnGas', 'gas');
+    bindHold('btnReverse', 'reverse');
     bindHold('btnBrake', 'brake');
     bindHold('btnNitro', 'nitro');
+
+    // Mobile Contextual Quick Action Buttons
+    const mobileHornBtn = document.getElementById('mobileHornBtn');
+    if (mobileHornBtn) {
+        mobileHornBtn.addEventListener('touchstart', (e) => { e.preventDefault(); ensureAudio(); playHornSFX(true); });
+        mobileHornBtn.addEventListener('touchend', (e) => { e.preventDefault(); playHornSFX(false); });
+        mobileHornBtn.addEventListener('touchcancel', (e) => { e.preventDefault(); playHornSFX(false); });
+        mobileHornBtn.addEventListener('mousedown', () => { ensureAudio(); playHornSFX(true); });
+        mobileHornBtn.addEventListener('mouseup', () => playHornSFX(false));
+        mobileHornBtn.addEventListener('mouseleave', () => playHornSFX(false));
+    }
+
+    const mobileCamBtn = document.getElementById('mobileCamBtn');
+    if (mobileCamBtn) {
+        mobileCamBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            cycleCameraView();
+        });
+    }
+
+    const mobileRadioBtn = document.getElementById('mobileRadioBtn');
+    if (mobileRadioBtn) {
+        mobileRadioBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            ensureAudio();
+            toggleRadio();
+        });
+    }
+
+    const mobileMapBtn = document.getElementById('mobileMapBtn');
+    if (mobileMapBtn) {
+        mobileMapBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            toggleFullMap();
+        });
+    }
+
+    const mobileExitBtn = document.getElementById('mobileExitBtn');
+    if (mobileExitBtn) {
+        mobileExitBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            toggleEnterExitCar();
+        });
+    }
 
     window.addEventListener('resize', () => {
         if (!camera || !renderer) return;
