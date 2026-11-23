@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Mumbai Island Taxi Sim 3D</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+</head>
+<body>
+    <canvas id="gameCanvas"></canvas>
+    <canvas id="cockpitCanvas"></canvas>
+
+    <!-- Main Menu Screen Overlay -->
+    <div id="mainMenuOverlay" class="fixed inset-0 z-40 bg-slate-950/60 backdrop-blur-sm flex flex-col items-center justify-center p-4 select-none">
+        <div class="glass-hud rounded-3xl p-6 sm:p-8 max-w-sm w-full text-center text-white shadow-2xl border border-slate-700/60 flex flex-col items-center animate-fadeIn">
+            <!-- Game Logo & Title -->
+            <div class="w-16 h-16 rounded-2xl bg-amber-400/20 border border-amber-400/40 flex items-center justify-center text-4xl mb-3 shadow-lg shadow-amber-500/10">
+                🚕
+            </div>
+            <h1 class="text-2xl sm:text-3xl font-black text-amber-300 tracking-wide">MUMBAI ISLAND</h1>
+            <p class="text-xs uppercase tracking-widest text-slate-300 font-extrabold mt-0.5 mb-6">Relaxing Taxi Simulator</p>
+
+            <!-- Menu Actions -->
+            <div class="w-full flex flex-col gap-3">
+                <button id="startGameBtn" type="button" class="w-full py-3.5 rounded-2xl bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 active:scale-95 text-slate-950 font-black text-sm tracking-wider uppercase shadow-xl transition-all duration-150">
+                    ▶ Start Driving
+                </button>
+                <button id="settingsBtn" type="button" class="w-full py-3 rounded-2xl glass-hud hover:bg-slate-800/80 active:scale-95 text-slate-200 font-bold text-sm tracking-wide shadow-md transition-all">
+                    ⚙ Settings & Vibe
+                </button>
+                <button id="exitBtn" type="button" class="w-full py-2.5 rounded-2xl glass-hud hover:bg-rose-500/20 hover:border-rose-400/30 active:scale-95 text-slate-400 hover:text-rose-300 font-semibold text-xs transition-all">
+                    ✕ Pause / Break
+                </button>
+            </div>
+
+            <!-- Footer Relaxed Note -->
+            <div class="mt-6 pt-4 border-t border-slate-800/80 text-[11px] text-slate-400 leading-relaxed">
+                Cruise through the island, pick up passengers, listen to Lo-Fi radio, and unwind at your own pace.
+            </div>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div id="settingsModal" class="hidden fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-4 select-none">
+        <div class="glass-hud rounded-3xl p-6 max-w-md w-full text-white shadow-2xl border border-slate-700/60 flex flex-col gap-4 animate-fadeIn">
+            <div class="flex items-center justify-between pb-2 border-b border-slate-800">
+                <div class="flex items-center gap-2">
+                    <span class="text-xl">⚙️</span>
+                    <h3 class="text-base font-black text-amber-300 uppercase tracking-wide">Audio & Atmosphere</h3>
+                </div>
+                <button id="closeSettingsBtn" type="button" class="text-slate-400 hover:text-white font-bold text-base px-2 py-1">✕</button>
+            </div>
+
+            <!-- Master Volume -->
+            <div>
+                <div class="flex justify-between text-xs font-bold text-slate-300 mb-1.5">
+                    <span>Sound Volume</span>
+                    <span id="volumeValue" class="text-amber-400">70%</span>
+                </div>
+                <input id="volumeSlider" type="range" min="0" max="100" value="70" class="w-full accent-amber-400 cursor-pointer">
+            </div>
+
+            <!-- Atmosphere / Time of Day -->
+            <div>
+                <label class="block text-xs font-bold text-slate-300 mb-1.5">Atmosphere & Lighting</label>
+                <div class="grid grid-cols-3 gap-2">
+                    <button id="setMorningBtn" type="button" class="py-2.5 rounded-xl glass-hud hover:bg-slate-800 font-bold text-xs text-sky-300 active:scale-95 transition">
+                        ☀️ Morning
+                    </button>
+                    <button id="setSunsetBtn" type="button" class="py-2.5 rounded-xl glass-hud hover:bg-slate-800 font-bold text-xs text-amber-400 active:scale-95 transition">
+                        🌅 Golden Sunset
+                    </button>
+                    <button id="setNightBtn" type="button" class="py-2.5 rounded-xl glass-hud hover:bg-slate-800 font-bold text-xs text-indigo-300 active:scale-95 transition">
+                        🌙 Calm Night
+                    </button>
+                </div>
+            </div>
+
+            <!-- Lo-Fi Radio Quick Toggle -->
+            <div class="flex items-center justify-between p-3 rounded-2xl bg-slate-900/60 border border-slate-800">
+                <div>
+                    <div class="text-xs font-bold text-slate-200">Lo-Fi Synthwave Radio</div>
+                    <div class="text-[10px] text-slate-400">Relaxing background chords & beats</div>
+                </div>
+                <button id="settingsRadioToggle" type="button" class="px-3 py-1.5 rounded-xl glass-hud text-pink-300 font-bold text-xs hover:bg-slate-800">
+                    Radio: OFF
+                </button>
+            </div>
+
+            <button id="saveSettingsBtn" type="button" class="w-full py-2.5 mt-1 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs tracking-wider uppercase transition">
+                Save & Close
+            </button>
+        </div>
+    </div>
+
+    <!-- Exit / Break Modal -->
+    <div id="exitModal" class="hidden fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-4 select-none">
+        <div class="glass-hud rounded-3xl p-6 max-w-sm w-full text-center text-white shadow-2xl border border-slate-700/60 animate-fadeIn">
+            <div class="text-4xl mb-2">🌴</div>
+            <h3 class="text-xl font-black text-amber-300">Taking a Break?</h3>
+            <p class="text-xs text-slate-300 mt-2 leading-relaxed">
+                Your taxi is safely parked on the island. You can resume cruising anytime!
+            </p>
+            <div class="mt-5 flex flex-col gap-2">
+                <button id="resumeDriveBtn" type="button" class="w-full py-3 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs uppercase tracking-wider transition">
+                    ▶ Resume Cruising
+                </button>
+                <button id="returnMenuBtn" type="button" class="w-full py-2.5 rounded-xl glass-hud hover:bg-slate-800 text-slate-300 font-bold text-xs transition">
+                    Main Menu
+                </button>
+                <button id="closeTabBtn" type="button" class="w-full py-2 rounded-xl text-slate-400 hover:text-slate-200 font-semibold text-[11px] transition">
+                    Close Tab / Window
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- In-Game HUD Elements (Hidden while on Main Menu) -->
+    <div id="inGameHud" class="hidden">
+        <!-- Top Left HUD: Cash, Health, Fuel, Nitro & Controls -->
+        <div class="fixed top-3 left-3 z-20 flex flex-col gap-2 pointer-events-none max-w-[270px]">
+            <div class="glass-hud rounded-2xl p-3 text-white shadow-xl">
+                <div class="flex items-center justify-between gap-4">
+                    <div>
+                        <div class="text-[10px] uppercase tracking-wider text-slate-400 font-bold">Earnings</div>
+                        <div id="cashDisplay" class="text-2xl font-black text-emerald-400">$120</div>
+                    </div>
+                    <div class="text-right">
+                        <div class="text-[10px] uppercase tracking-wider text-slate-400 font-bold">Fares</div>
+                        <div id="faresDisplay" class="text-lg font-extrabold text-amber-300">0</div>
+                    </div>
+                </div>
+
+                <!-- Vehicle Integrity -->
+                <div class="mt-2.5">
+                    <div class="flex justify-between text-[11px] font-semibold text-slate-300 mb-0.5">
+                        <span>Taxi Health</span>
+                        <span id="healthText">100%</span>
+                    </div>
+                    <div class="w-full h-2 bg-slate-800 rounded-full overflow-hidden">
+                        <div id="healthBar" class="h-full bg-emerald-500 transition-all duration-150" style="width: 100%"></div>
+                    </div>
+                </div>
+
+                <!-- Fuel Gauge -->
+                <div class="mt-2">
+                    <div class="flex justify-between text-[11px] font-semibold text-slate-300 mb-0.5">
+                        <span>Fuel</span>
+                        <span id="fuelText">100%</span>
+                    </div>
+                    <div class="w-full h-2 bg-slate-800 rounded-full overflow-hidden">
+                        <div id="fuelBar" class="h-full bg-amber-400 transition-all duration-150" style="width: 100%"></div>
+                    </div>
+                </div>
+
+                <!-- Nitro Gauge -->
+                <div class="mt-2">
+                    <div class="flex justify-between text-[11px] font-semibold text-slate-300 mb-0.5">
+                        <span>Nitro (Shift)</span>
+                        <span id="nitroText">100%</span>
+                    </div>
+                    <div class="w-full h-2 bg-slate-800 rounded-full overflow-hidden">
+                        <div id="nitroBar" class="h-full bg-sky-400 transition-all duration-150" style="width: 100%"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Action Buttons -->
+            <div class="flex flex-wrap gap-1.5 pointer-events-auto">
+                <button id="exitCarBtn" type="button" class="glass-hud hover:bg-slate-800 active:scale-95 text-amber-300 font-bold text-xs px-3 py-2 rounded-xl shadow transition">
+                    [E] Step Out
+                </button>
+                <button id="mapBtn" type="button" class="glass-hud hover:bg-slate-800 active:scale-95 text-indigo-300 font-bold text-xs px-3 py-2 rounded-xl shadow transition">
+                    [M] Map 🗺️
+                </button>
+                <button id="camBtn" type="button" class="glass-hud hover:bg-slate-800 active:scale-95 text-slate-200 font-bold text-xs px-3 py-2 rounded-xl shadow transition">
+                    [C] View 🎥
+                </button>
+                <button id="hornBtn" type="button" class="glass-hud hover:bg-slate-800 active:scale-95 text-emerald-300 font-bold text-xs px-3 py-2 rounded-xl shadow transition">
+                    [H] Horn 📯
+                </button>
+                <button id="radioBtn" type="button" class="glass-hud hover:bg-slate-800 active:scale-95 text-pink-300 font-bold text-xs px-3 py-2 rounded-xl shadow transition">
+                    [R] Radio: OFF
+                </button>
+                <button id="timeBtn" type="button" class="glass-hud hover:bg-slate-800 active:scale-95 text-sky-300 font-bold text-xs px-3 py-2 rounded-xl shadow transition">
+                    [T] Day/Night
+                </button>
+                <button id="pauseGameBtn" type="button" class="glass-hud hover:bg-slate-800 active:scale-95 text-slate-300 font-bold text-xs px-3 py-2 rounded-xl shadow transition">
+                    [Esc] Pause ⏸️
+                </button>
+            </div>
+        </div>
+
+        <!-- Top Center Objective Banner -->
+        <div class="fixed top-3 left-1/2 -translate-x-1/2 z-20 pointer-events-none w-[90%] max-w-md">
+            <div id="missionBanner" class="glass-hud rounded-2xl px-4 py-2.5 text-center text-white shadow-xl">
+                <div class="flex items-center justify-center gap-2">
+                    <span id="missionDot" class="w-2.5 h-2.5 rounded-full bg-sky-400 animate-pulse"></span>
+                    <span id="missionTitle" class="text-xs sm:text-sm font-extrabold tracking-wide text-sky-300 uppercase">Drive to Blue Pickup Zone</span>
+                    <span id="missionTimer" class="hidden text-xs font-black bg-amber-500/20 text-amber-300 px-2 py-0.5 rounded-lg border border-amber-400/30">45s</span>
+                </div>
+                <div id="missionSub" class="text-[11px] text-slate-300 mt-0.5">WASD Drive • Shift Nitro • M Full Map • H Horn • E Step Out • Space Brake • R Radio</div>
+            </div>
+        </div>
+
+        <!-- Top Right Minimap + Speedometer -->
+        <div class="fixed top-3 right-3 z-20 flex flex-col items-end gap-2 pointer-events-none">
+            <div id="minimapContainer" class="glass-hud p-1.5 rounded-full shadow-2xl pointer-events-auto cursor-pointer hover:scale-105 transition-transform" title="Click to view full map [M]">
+                <canvas id="minimapCanvas" width="136" height="136" class="rounded-full block"></canvas>
+            </div>
+
+            <!-- Circular Speedometer -->
+            <div class="glass-hud rounded-2xl px-3.5 py-2.5 flex items-center gap-3 shadow-xl">
+                <div class="relative w-16 h-16 flex items-center justify-center">
+                    <svg class="w-16 h-16 -rotate-90" viewBox="0 0 64 64">
+                        <circle cx="32" cy="32" r="26" fill="none" stroke="rgba(255,255,255,0.12)" stroke-width="6"></circle>
+                        <circle id="speedometerArc" cx="32" cy="32" r="26" fill="none" stroke="#facc15" stroke-width="6"
+                                stroke-linecap="round" stroke-dasharray="163.36" stroke-dashoffset="163.36"></circle>
+                    </svg>
+                    <div class="absolute inset-0 flex flex-col items-center justify-center">
+                        <span id="speedometerValue" class="text-base font-black text-white leading-none">0</span>
+                        <span class="text-[9px] font-bold text-slate-400 mt-0.5">KM/H</span>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <div class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Gear / Mode</div>
+                    <div id="speedometerGear" class="text-base font-black text-amber-400">P</div>
+                    <div id="fpsCounter" class="text-[10px] text-emerald-400 font-semibold mt-0.5">60 FPS</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Touch Controls -->
+        <div class="fixed bottom-3 left-3 right-3 z-20 flex justify-between items-end md:hidden pointer-events-none">
+            <div class="flex gap-2 pointer-events-auto">
+                <button id="btnLeft" type="button" class="glass-hud w-14 h-14 rounded-2xl text-white font-black text-xl active:bg-amber-500/40">◀</button>
+                <button id="btnRight" type="button" class="glass-hud w-14 h-14 rounded-2xl text-white font-black text-xl active:bg-amber-500/40">▶</button>
+            </div>
+            <div class="flex gap-2 pointer-events-auto">
+                <button id="btnNitro" type="button" class="glass-hud px-3 h-14 rounded-2xl text-sky-300 font-black text-xs active:bg-sky-500/40">NITRO</button>
+                <button id="btnBrake" type="button" class="glass-hud px-3 h-14 rounded-2xl text-rose-300 font-black text-xs active:bg-rose-500/40">BRAKE</button>
+                <button id="btnGas" type="button" class="glass-hud w-14 h-14 rounded-2xl text-emerald-300 font-black text-sm active:bg-emerald-500/40">GAS</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Full Screen Island GPS Map Modal -->
+    <div id="mapModal" class="hidden fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-5">
+        <div class="glass-hud rounded-3xl p-4 sm:p-5 max-w-xl w-full text-white shadow-2xl flex flex-col gap-3 max-h-[95vh] border border-slate-700/60">
+            <!-- Map Header -->
+            <div class="flex items-center justify-between pb-2 border-b border-slate-800">
+                <div class="flex items-center gap-2.5">
+                    <span class="text-2xl">🗺️</span>
+                    <div>
+                        <h3 class="text-base sm:text-lg font-black text-amber-300 tracking-wide">Mumbai Island Satellite GPS</h3>
+                        <div class="text-[11px] text-slate-400">Total Island Map: 8.4 km × 8.4 km</div>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3">
+                    <div class="hidden sm:block text-right text-[11px]">
+                        <div class="text-slate-400 font-semibold">Coordinates</div>
+                        <div id="mapCoordsText" class="font-mono text-sky-400 font-bold">X: 250, Z: 250</div>
+                    </div>
+                    <button id="closeMapBtn" type="button" class="glass-hud hover:bg-rose-500/30 hover:border-rose-400/50 text-slate-300 hover:text-white px-3 py-1.5 rounded-xl font-bold text-xs transition">
+                        ✕ Close [M]
+                    </button>
+                </div>
+            </div>
+
+            <!-- Full Map Canvas -->
+            <div class="relative w-full aspect-square max-h-[58vh] rounded-2xl overflow-hidden bg-slate-950 border border-slate-800 shadow-inner flex items-center justify-center">
+                <canvas id="fullMapCanvas" width="560" height="560" class="w-full h-full block object-contain"></canvas>
+                <div class="absolute bottom-2.5 left-2.5 glass-hud rounded-lg px-2.5 py-1 text-[10px] text-slate-300 font-semibold pointer-events-none">
+                    North is UP ↑
+                </div>
+                <div id="mapDistBadge" class="absolute bottom-2.5 right-2.5 glass-hud rounded-lg px-2.5 py-1 text-[10px] text-amber-300 font-bold pointer-events-none">
+                    Target: 620m
+                </div>
+            </div>
+
+            <!-- Map Legend -->
+            <div class="flex flex-wrap items-center justify-around gap-2 text-[11px] text-slate-300 bg-slate-900/60 rounded-xl p-2.5 border border-slate-800/60">
+                <div class="flex items-center gap-1.5">
+                    <span class="w-3 h-3 rounded-full bg-amber-400 border border-black inline-block"></span>
+                    <span class="font-bold text-amber-300">Your Taxi</span>
+                </div>
+                <div class="flex items-center gap-1.5">
+                    <span class="w-3 h-3 rounded-full bg-sky-400 border border-white inline-block"></span>
+                    <span>Pickup</span>
+                </div>
+                <div class="flex items-center gap-1.5">
+                    <span class="w-3 h-3 rounded-full bg-amber-500 border border-white inline-block"></span>
+                    <span>Dropoff</span>
+                </div>
+                <div class="flex items-center gap-1.5">
+                    <span class="w-2.5 h-2.5 rounded-sm bg-amber-500 inline-block"></span>
+                    <span>⛽ Fuel</span>
+                </div>
+                <div class="flex items-center gap-1.5">
+                    <span class="w-2.5 h-2.5 rounded-sm bg-emerald-500 inline-block"></span>
+                    <span>🔧 Repair</span>
+                </div>
+                <div class="flex items-center gap-1.5">
+                    <span class="w-2.5 h-2.5 rounded-sm bg-sky-600 inline-block"></span>
+                    <span>River & Bridges</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Game Over / Wrecked Modal -->
+    <div id="gameOverModal" class="hidden fixed inset-0 z-40 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4">
+        <div class="glass-hud rounded-3xl p-6 max-w-sm w-full text-center text-white shadow-2xl">
+            <div class="text-4xl mb-2">🚕💥</div>
+            <h2 id="gameOverTitle" class="text-2xl font-black text-rose-400">Taxi Wrecked!</h2>
+            <p id="gameOverReason" class="text-sm text-slate-300 mt-1">Your cab took too much damage.</p>
+            <div class="mt-4 bg-slate-900/70 rounded-2xl p-3 flex justify-around">
+                <div>
+                    <div class="text-[10px] text-slate-400 uppercase font-bold">Total Cash</div>
+                    <div id="finalCash" class="text-xl font-black text-emerald-400">$0</div>
+                </div>
+                <div>
+                    <div class="text-[10px] text-slate-400 uppercase font-bold">Fares</div>
+                    <div id="finalFares" class="text-xl font-black text-amber-300">0</div>
+                </div>
+            </div>
+            <button id="restartBtn" type="button" class="mt-5 w-full py-3 rounded-2xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-sm tracking-wide shadow-lg transition">
+                Tow & Repair Taxi ($0)
+            </button>
+        </div>
+    </div>
+
+    <!-- Floating Toast Notification -->
+    <div id="toastBox" class="fixed bottom-24 left-1/2 -translate-x-1/2 z-50 pointer-events-none opacity-0 transition-opacity duration-200">
+        <div id="toastText" class="glass-hud text-amber-300 font-extrabold text-sm px-4 py-2 rounded-full shadow-lg"></div>
+    </div>
+
+    <!-- Modular Game Scripts (Execution Order) -->
+    <script src="js/config.js"></script>
+    <script src="js/audio.js"></script>
+    <script src="js/textures.js"></script>
+    <script src="js/vehicles.js"></script>
+    <script src="js/world.js"></script>
+    <script src="js/minimap.js"></script>
+    <script src="js/controls.js"></script>
+    <script src="js/game.js"></script>
+</body>
+</html>
+
